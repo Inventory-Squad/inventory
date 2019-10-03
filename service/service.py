@@ -105,39 +105,6 @@ def internal_server_error(error):
 @app.route('/')
 def index():
 
-######################################################################
-# LIST ALL InventoryS
-######################################################################
-@app.route('/inventory', methods=['GET'])
-def list_inventory():
-
-
-######################################################################
-# RETRIEVE A Inventory
-######################################################################
-@app.route('/inventory/<int:inventory_id>', methods=['GET'])
-def get_inventory(inventory_id):
-
-
-######################################################################
-# ADD A NEW Inventory
-######################################################################
-@app.route('/inventory', methods=['POST'])
-def create_inventory():
-
-
-######################################################################
-# UPDATE AN EXISTING Inventory
-######################################################################
-@app.route('/inventory/<int:inventory_id>', methods=['PUT'])
-def update_inventory(inventory_id):
-
-
-######################################################################
-# DELETE AN Inventory
-######################################################################
-@app.route('/inventory/<int:inventory_id>', methods=['DELETE'])
-def delete_inventory(inventory_id):
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
