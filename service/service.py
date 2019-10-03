@@ -104,7 +104,10 @@ def internal_server_error(error):
 ######################################################################
 @app.route('/')
 def index():
-
+    """ Root URL response """
+    return jsonify(name='Inventory REST API Service',
+                   version='1.0'
+                  ), status.HTTP_200_OK
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

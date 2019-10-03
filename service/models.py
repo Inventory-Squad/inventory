@@ -62,48 +62,6 @@ class Inventory(db.Model):
     def __repr__(self):
         return '<Inventory %r>' % (self.inventory_id)
 
-    def save(self):
-        """
-        Saves an Inventory to the data store
-        """
-        Inventory.logger.info('Saving %s', self.inventory_id)
-        if not self.inventory_id:
-            db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        """ Removes an Inventory from the data store """
-        Inventory.logger.info('Deleting %s', self.inventory_id)
-        db.session.delete(self)
-        db.session.commit()
-
-    def serialize(self):
-        """ Serializes an Inventory into a dictionary """
-        return {"inventory_id": self.inventory_id,
-                "product_id": self.product_id,
-                "quantity": self.quantity,
-                "restock_level": self.restock_level,
-                "condition": self.condition,
-                "available": self.available}
-
-    def deserialize(self, data):
-        """
-        Deserializes a Inventory from a dictionary
-
-        Args:
-            data (dict): A dictionary containing the Inventory data
-        """
-        try:
-            self.product_id = data['product_id']
-            self.quantity = data['quantity']
-            self.restock_level = data['restock_level']
-            self.condition = data['condition']
-            self.available = data['available']
-        except TypeError as error:
-            raise DataValidationError('Invalid Inventory: body of request contained' \
-                                      'bad or no data')
-        return self
-
     @classmethod
     def init_db(cls, app):
         """ Initializes the database session """
