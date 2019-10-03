@@ -43,7 +43,6 @@ class TestInventoryServer(unittest.TestCase):
         """ Run once before all tests """
         app.debug = False
         initialize_logging(logging.INFO)
-        # Set up the test database
         app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 
     @classmethod
@@ -53,8 +52,8 @@ class TestInventoryServer(unittest.TestCase):
     def setUp(self):
         """ Runs before each test """
         init_db()
-        db.drop_all()    # clean up the last tests
-        db.create_all()  # create new tables
+        db.drop_all()
+        db.create_all()
         self.app = app.test_client()
 
     def tearDown(self):
