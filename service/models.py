@@ -24,7 +24,7 @@ The inventory resource keeps track of how many of each product we have in our wa
 Attributes:
 -----------
 inventory_id (int) readonly
-product_id (string) readonly
+product_id (int)
 quantity (int)
 restock_level (int) (when to order more )
 condition (string) ( new / open box / used )
@@ -53,7 +53,7 @@ class Inventory(db.Model):
 
     # Table Schema
     inventory_id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.String(63))
+    product_id = db.Column(db.Integer)
     quantity = db.Column(db.Integer)
     restock_level = db.Column(db.Integer)
     condition = db.Column(db.String(10))
