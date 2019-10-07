@@ -128,7 +128,7 @@ class TestInventory(unittest.TestCase):
         self.assertRaises(TypeError, Inventory.save, inventory_with_available_as_none)
 
     def test_create_an_inventory_with_missing_required_field(self):
-        """ Create an inventory with missing required field and assert DataValidationError will raise """
+        """ Create an inventory with missing required field and assert RequiredFieldError will raise """
         inventory_missing_product_id = Inventory(quantity=100, restock_level=50, condition="new", available="True")
         inventory_missing_restock_level = Inventory(product_id=1, quantity=100, condition="new", available="True")
         inventory_missing_quantity = Inventory(product_id=1, restock_level=50, condition="new", available="True")
