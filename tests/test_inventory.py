@@ -23,7 +23,7 @@ Test cases can be run with:
 import unittest
 import os
 from werkzeug.exceptions import NotFound
-from service.models import Inventory, DataValidationError, RequiredFieldError, db
+from service.models import Inventory, DataValidationError, db
 from service import app
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
