@@ -41,12 +41,6 @@ class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
     pass
 
-class RequiredFieldError(Exception):
-    """ Used for required field in a request """
-    pass
-
-
-
 class Inventory(db.Model):
     """
     Class that represents an inventory
