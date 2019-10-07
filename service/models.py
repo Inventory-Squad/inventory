@@ -41,6 +41,12 @@ class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
     pass
 
+class RequiredFieldError(Exception):
+    """ Used for required field in a request """
+    pass
+
+
+
 class Inventory(db.Model):
     """
     Class that represents an inventory
@@ -61,6 +67,11 @@ class Inventory(db.Model):
 
     def __repr__(self):
         return '<Inventory %r>' % (self.inventory_id)
+
+    def save(self):
+        """
+        Saves an Inventory to db
+        """
 
     @classmethod
     def init_db(cls, app):
