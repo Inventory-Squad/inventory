@@ -62,6 +62,11 @@ class Inventory(db.Model):
     def __repr__(self):
         return '<Inventory %r>' % (self.inventory_id)
 
+    def save(self):
+        """
+        Saves an Inventory to db
+        """
+
     @classmethod
     def init_db(cls, app):
         """ Initializes the database session """

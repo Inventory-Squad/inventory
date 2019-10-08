@@ -53,3 +53,33 @@ class TestInventory(unittest.TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+
+    def test_create_an_inventory(self):
+        """ Create an inventory and assert that it exists """
+        inventory = Inventory(product_id=1, quantity=100, restock_level=50, condition="new", available=True)
+        self.assertTrue(inventory != None)
+        self.assertEqual(inventory.inventory_id, None)
+        self.assertEqual(inventory.product_id, 1)
+        self.assertEqual(inventory.quantity, 100)
+        self.assertEqual(inventory.restock_level, 50)
+        self.assertEqual(inventory.condition, 'new')
+        self.assertEqual(inventory.available, True)
+
+    def test_add_an_inventory(self):
+        """ Create an inventory and add it to the database """
+        inventory = Inventory.all()
+        self.assertEqual(inventory, [])
+        inventory = Inventory(product_id=1, quantity=100, restock_level=50, condition="new", available=True)
+        self.assertTrue(inventory != None)
+        self.assertEqual(inventory.inventory_id, None)
+        inventory.save()
+        self.assertEqual(inventory.inventory_id, 1)
+        inventory = Inventory.all()
+        self.assertEqual(len(inventory), 1)
+
+
+    
+
+
+
+
