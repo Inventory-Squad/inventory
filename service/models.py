@@ -66,6 +66,10 @@ class Inventory(db.Model):
         """
         Saves an Inventory to db
         """
+        Inventory.logger.info('Saving %s', self.inventory_id)
+        if not self.inventory_id:
+            db.session.add(self)
+        db.session.commit()
 
     @classmethod
     def init_db(cls, app):
