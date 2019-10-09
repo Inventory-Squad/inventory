@@ -77,9 +77,26 @@ class TestInventory(unittest.TestCase):
         inventory = Inventory.all()
         self.assertEqual(len(inventory), 1)
 
-
-    
-
-
-
-
+    def test_update_inventory(self):
+        """ Update an existing inventory """
+        inventory = Inventory(product_id=1, quantity=100,
+                              restock_level=50, condition="new", available=True)
+        inventory.save()
+        self.assertEqual(inventory.inventory_id, 1)
+        # Change it and save it
+        inventory.product_id = 2
+        inventory.quantity = 200
+        inventory.restock_level = 100
+        inventory.condition = "used"
+        inventory.available = False
+        inventory.save()
+        self.assertEqual(inventory.id, 1)
+        # Fetch it back and make sure the id hasn't change
+        # but the data did change
+        inventory = Inventory.all()
+        self.assertEqual(len(inventory), 1)
+        self.assertEqual(inventory[0].product_id, 2)
+        self.assertEqual(inventory[0].quantity, 200)
+        self.assertEqual(inventory[0].restock_level, 100)
+        self.assertEqual(inventory[0].condition, 'used')
+        self.assertEqual(inventory[0].available, False)
