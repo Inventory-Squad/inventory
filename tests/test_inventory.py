@@ -138,8 +138,6 @@ class TestInventory(unittest.TestCase):
                               available=True)
         data = inventory.serialize()
         self.assertNotEqual(inventory, None)
-        self.assertIn('inventory_id', data)
-        self.assertEqual(data['inventory_id'], None)
         self.assertIn('product_id', data)
         self.assertEqual(data['product_id'], 1)
         self.assertIn('quantity', data)
@@ -309,3 +307,30 @@ class TestInventory(unittest.TestCase):
     def test_find_or_404_not_found(self):
         """ Find or return 404 NOT found """
         self.assertRaises(NotFound, Inventory.find_or_404, 0)
+
+    def test_find_by_restock(self):
+        """ Find inventories if quantity lower than their restock level """
+        Inventory(product_id=1, quantity=100, restock_level=50).save()
+        Inventory(product_id=2, quantity=20, restock_level=50).save()
+        Inventory(product_id=3, quantity=30, restock_level=50).save()
+        Inventory(product_id=4, quantity=120, restock_level=50).save()
+        Inventory(product_id=5, quantity=49, restock_level=50).save()
+        inventory = Inventory.find_by_restock(True)
+        self.assertEqual(inventory.count(), 3)
+        self.assertEqual(inventory[0].product_id, 2)
+        self.assertEqual(inventory[1].product_id, 3)
+        self.assertEqual(inventory[2].product_id, 5)
+        inventory = Inventory.find_by_restock(False)
+        self.assertEqual(len(inventory), 5)
+
+    def test_find_by_restock_level(self):
+        """ Find inventories by restock_level"""
+        Inventory(product_id=1, quantity=100, restock_level=20).save()
+        Inventory(product_id=2, quantity=20, restock_level=30).save()
+        Inventory(product_id=3, quantity=30, restock_level=50).save()
+        Inventory(product_id=4, quantity=120, restock_level=50).save()
+        Inventory(product_id=5, quantity=49, restock_level=50).save()
+        inventory = Inventory.find_by_restock_level(20)
+        self.assertEqual(inventory.count(), 1)
+        inventory = Inventory.find_by_restock_level(50)
+        self.assertEqual(inventory.count(), 3)

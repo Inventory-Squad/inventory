@@ -113,13 +113,23 @@ def index():
 ######################################################################
 # LIST ALL InventoryS
 ######################################################################
+# GET request to /inventory?restock=true
+# GET request to /inventory?restock-level={restock-level-value}
+
 @app.route('/inventory', methods=['GET'])
 def list_inventory():
     """ Returns all of the inventory """
     app.logger.info('Request for inventory list')
-    inventory = []
-    inventory = Inventory.all()
-    results = [e.serialize() for e in inventory]
+    inventories = []
+    restock = request.args.get('restock')
+    restock_level = request.args.get('restock-level')
+    if restock == "true":
+        inventories = Inventory.find_by_restock(True)
+    elif restock_level:
+        inventories = Inventory.find_by_restock_level(restock_level)
+    else:
+        inventories = Inventory.all()
+    results = [e.serialize() for e in inventories]
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 ######################################################################
