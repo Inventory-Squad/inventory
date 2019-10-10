@@ -22,6 +22,7 @@ Test cases can be run with:
 
 import unittest
 import os
+from werkzeug.exceptions import NotFound
 from service.models import Inventory, DataValidationError, db
 from service import app
 
@@ -202,8 +203,8 @@ class TestInventory(unittest.TestCase):
     def test_deserialize_missing_data(self):
         """ Test deserialization of missing data """
         inventory = Inventory()
-        miss_product_id = {"quantity": 100, "restock_level":"50",\
-                           "condition": "new", "available": "true"}
+        miss_product_id = {"quantity": 100, "restock_level":50,\
+                           "condition": "new", "available": True}
         with self.assertRaises(DataValidationError) as error:
             inventory.deserialize(miss_product_id)
         self.assertEqual(str(error.exception), 'Invalid Inventory: '\
