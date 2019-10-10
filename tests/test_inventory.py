@@ -78,8 +78,8 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(len(inventory), 1)
 
     def test_disable_an_inventory(self):
-		""" Disable an existing product """
-		inventory = Inventory(product_id=1, quantity=100,
+        """ Disable an existing product """
+        inventory = Inventory(product_id=1, quantity=100,
                               restock_level=50, condition="new", available=True)
         inventory.save()
         self.assertEqual(inventory.inventory_id, 1)
@@ -95,7 +95,7 @@ class TestInventory(unittest.TestCase):
 
     def test_delete_an_inventory_with_inventory_id(self):
         """ Delete an inventory """
-		inventory = Inventory(inventory_id=1, product_id=1, available=True)
+        inventory = Inventory(product_id=1, available=True)
         inventory.save()
         self.assertEqual(len(Inventory.all()), 1)
 
