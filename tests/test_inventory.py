@@ -44,7 +44,7 @@ class TestInventory(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         pass
-    
+
     def setUp(self):
         Inventory.init_db(app)
         db.drop_all()    # clean up the last tests
@@ -77,9 +77,40 @@ class TestInventory(unittest.TestCase):
         inventory = Inventory.all()
         self.assertEqual(len(inventory), 1)
 
+    def test_serialize_an_inventory(self):
+        """ Test serialization of an inventory """
+        inventory = Inventory(product_id=1, quantity=100, restock_level=50, condition="new", available=True)
+        data = inventory.serialize()
+        self.assertNotEqual(inventory, None)
+        self.assertIn('inventory_id', data)
+        self.assertEqual(data['inventory_id'], None)
+        self.assertIn('product_id', data)
+        self.assertEqual(data['product_id'], 1)
+        self.assertIn('quantity', data)
+        self.assertEqual(data['quantity'], 100)
+        self.assertIn('restock_level', data)
+        self.assertEqual(data['restock_level'], 50)
+        self.assertIn('condition', data)
+        self.assertEqual(data['condition'], "new")
+        self.assertIn('available', data)
+        self.assertEqual(data['available'], True)
 
-    
+    def test_deserialize_an_inventory(self):
+        """ Test deserialization of an inventory """
+        data = {"inventory_id": 1, "product_id":100, "quantity": 100, "restock_level":50,
+                "condition": "new", "available": True}
+        inventory = Inventory()
+        inventory.deserialize(data)
+        self.assertNotEqual(inventory, None)
+        self.assertEqual(inventory.inventory_id, None)
+        self.assertEqual(inventory.product_id, 100)
+        self.assertEqual(inventory.quantity, 100)
+        self.assertEqual(inventory.restock_level, 50)
+        self.assertEqual(inventory.condition, "new")
+        self.assertEqual(inventory.available, True)
 
-
-
-
+    def test_deserialize_bad_data(self):
+        """ Test deserialization of bad data """
+        data = "this is not a dictionary"
+        inventory = Inventory()
+        self.assertRaises(DataValidationError, inventory.deserialize, data)
