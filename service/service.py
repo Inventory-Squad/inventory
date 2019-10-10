@@ -106,8 +106,21 @@ def internal_server_error(error):
 def index():
     """ Root URL response """
     return jsonify(name='Inventory REST API Service',
-                   version='1.0'
+                   version='1.0',
+                   paths=url_for('list_inventory', _external=True)
                   ), status.HTTP_200_OK
+
+######################################################################
+# LIST ALL InventoryS
+######################################################################
+@app.route('/inventory', methods=['GET'])
+def list_inventory():
+    """ Returns all of the inventory """
+    app.logger.info('Request for inventory list')
+    inventory = []
+    inventory = Inventory.all()
+    results = [e.serialize() for e in inventory]
+    return make_response(jsonify(results), status.HTTP_200_OK)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

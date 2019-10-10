@@ -60,9 +60,32 @@ class TestInventoryServer(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
+    def _create_inventories(self, count):
+        """ Factory method to create inventory in bulk """
+        lists = []
+        for _ in range(count):
+            test = InventoryFactory()
+            test.save()
+            lists.append(test)
+        return lists
+
     def test_index(self):
         """ Test the Home Page """
         resp = self.app.get('/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data['name'], 'Inventory REST API Service')
+
+    def test_get_inventory_list(self):
+        """ Get a list of Inventory """
+        self._create_inventories(5)
+        resp = self.app.get('/inventory')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 5)
+
+######################################################################
+#   M A I N
+######################################################################
+if __name__ == '__main__':
+    unittest.main()
