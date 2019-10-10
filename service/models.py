@@ -96,6 +96,11 @@ class Inventory(db.Model):
             raise DataValidationError('Invalid Inventory: body of request contained' \
                                       'bad or no data')
         return self
+      
+    def delete(self):
+        """ Removes an Inventory from the data store """
+        db.session.delete(self)
+        db.session.commit()
 
     @classmethod
     def init_db(cls, app):
