@@ -71,6 +71,10 @@ class Inventory(db.Model):
             db.session.add(self)
         db.session.commit()
 
+    def serialize(self):
+        """ Serializes an Inventory into a dictionary """
+        return {}
+
     def delete(self):
         """ Removes an Inventory from the data store """
         db.session.delete(self)
