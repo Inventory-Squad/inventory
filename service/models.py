@@ -71,6 +71,35 @@ class Inventory(db.Model):
             db.session.add(self)
         db.session.commit()
 
+    def serialize(self):
+        """ Serializes an Inventory into a dictionary """
+        return {"inventory_id": self.inventory_id,
+                "product_id": self.product_id,
+                "quantity": self.quantity,
+                "restock_level": self.restock_level,
+                "condition": self.condition,
+                "available": self.available}
+
+    def deserialize(self, data):
+        """
+        Deserializes a Inventory from a dictionary
+        Args:
+            data (dict): A dictionary containing the Inventory data
+        """
+        try:
+            self.product_id = data['product_id']
+            self.quantity = data['quantity']
+            self.restock_level = data['restock_level']
+            self.condition = data['condition']
+            self.available = data['available']
+            if type(self.product_id) != int or type(self.quantity) != int or type(self.restock_level) != int or not isinstance(self.condition, str) or not isinstance(self.available, bool):
+                raise DataValidationError('Invalid type')
+        except KeyError as error:
+            raise DataValidationError('Invalid Inventory: missing ' + error.args[0])
+        except TypeError as error:
+            raise DataValidationError('Invalid Inventory: body of request contained bad or no data')
+        return self
+
     def delete(self):
         """ Removes an Inventory from the data store """
         db.session.delete(self)
