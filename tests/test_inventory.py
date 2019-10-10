@@ -56,8 +56,10 @@ class TestInventory(unittest.TestCase):
 
     def test_create_an_inventory(self):
         """ Create an inventory and assert that it exists """
-        inventory = Inventory(product_id=1, quantity=100, restock_level=50, condition="new", available=True)
-        self.assertTrue(inventory != None)
+        inventory = Inventory(product_id=1, quantity=100,\
+                              restock_level=50, condition="new",\
+                              available=True)
+        self.assertNotEqual(inventory, None)
         self.assertEqual(inventory.inventory_id, None)
         self.assertEqual(inventory.product_id, 1)
         self.assertEqual(inventory.quantity, 100)
@@ -69,8 +71,10 @@ class TestInventory(unittest.TestCase):
         """ Create an inventory and add it to the database """
         inventory = Inventory.all()
         self.assertEqual(inventory, [])
-        inventory = Inventory(product_id=1, quantity=100, restock_level=50, condition="new", available=True)
-        self.assertTrue(inventory != None)
+        inventory = Inventory(product_id=1, quantity=100,\
+                              restock_level=50, condition="new",\
+                              available=True)
+        self.assertNotEqual(inventory, None)
         self.assertEqual(inventory.inventory_id, None)
         inventory.save()
         self.assertEqual(inventory.inventory_id, 1)
@@ -104,7 +108,8 @@ class TestInventory(unittest.TestCase):
     def test_disable_an_inventory(self):
         """ Disable an existing product """
         inventory = Inventory(product_id=1, quantity=100,
-                              restock_level=50, condition="new", available=True)
+                              restock_level=50, condition="new",\
+                              available=True)
         inventory.save()
         self.assertEqual(inventory.inventory_id, 1)
         # Change the status and save it
@@ -125,6 +130,109 @@ class TestInventory(unittest.TestCase):
         # delete the inventory and make sure it isn't in the database
         inventory.delete()
         self.assertEqual(len(Inventory.all()), 0)
+
+    def test_serialize_an_inventory(self):
+        """ Test serialization of an inventory """
+        inventory = Inventory(product_id=1, quantity=100,\
+                              restock_level=50, condition="new",\
+                              available=True)
+        data = inventory.serialize()
+        self.assertNotEqual(inventory, None)
+        self.assertIn('inventory_id', data)
+        self.assertEqual(data['inventory_id'], None)
+        self.assertIn('product_id', data)
+        self.assertEqual(data['product_id'], 1)
+        self.assertIn('quantity', data)
+        self.assertEqual(data['quantity'], 100)
+        self.assertIn('restock_level', data)
+        self.assertEqual(data['restock_level'], 50)
+        self.assertIn('condition', data)
+        self.assertEqual(data['condition'], "new")
+        self.assertIn('available', data)
+        self.assertEqual(data['available'], True)
+
+    def test_deserialize_an_inventory(self):
+        """ Test deserialization of an inventory """
+        data = {"inventory_id": 1, "product_id":100, "quantity": 100,\
+                "restock_level":50, "condition": "new", "available": True}
+        inventory = Inventory()
+        inventory.deserialize(data)
+        self.assertNotEqual(inventory, None)
+        self.assertEqual(inventory.inventory_id, None)
+        self.assertEqual(inventory.product_id, 100)
+        self.assertEqual(inventory.quantity, 100)
+        self.assertEqual(inventory.restock_level, 50)
+        self.assertEqual(inventory.condition, "new")
+        self.assertEqual(inventory.available, True)
+
+    def test_deserialize_bad_data(self):
+        """ Test deserialization of bad data """
+        data = "this is not a dictionary"
+        inventory = Inventory()
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(data)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : string indices must be integers')
+
+    def test_deserialize_wrong_type_data(self):
+        """ Test deserialization of wrong type data """
+        inventory = Inventory()
+        product_id_string = {"inventory_id": 1, "product_id":"100",\
+                             "quantity": 100, "restock_level":50,
+                             "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(product_id_string)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : product_id required int')
+
+        quantity_string = {"inventory_id": 1, "product_id":100,\
+                           "quantity": "100", "restock_level":50,\
+                           "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(quantity_string)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : quantity required int')
+
+        restock_level_string = {"inventory_id": 1, "product_id":100,\
+                                "quantity": 100, "restock_level":"50",
+                                "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(restock_level_string)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : restock_level required int')
+
+        condition_int = {"inventory_id": 1, "product_id":100,\
+                         "quantity": 100, "restock_level": 50,
+                         "condition": 1, "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(condition_int)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : condition required string')
+
+        available_string = {"inventory_id": 1, "product_id":100,\
+                            "quantity": 100, "restock_level":50,
+                            "condition": "new", "available": "true"}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(available_string)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: '\
+                         'body of request contained '\
+                         'bad or no data : available required bool')
+
+    def test_deserialize_missing_data(self):
+        """ Test deserialization of missing data """
+        inventory = Inventory()
+        miss_product_id = {"quantity": 100, "restock_level":50,\
+                           "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(miss_product_id)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: '\
+                         'missing product_id')
+
     def test_find_an_inventory(self):
         """ Find an inventory by inventory_id """
         new_inventory = Inventory(product_id=1, quantity=100, restock_level=50,
@@ -201,3 +309,4 @@ class TestInventory(unittest.TestCase):
     def test_find_or_404_not_found(self):
         """ Find or return 404 NOT found """
         self.assertRaises(NotFound, Inventory.find_or_404, 0)
+
