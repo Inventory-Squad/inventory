@@ -92,13 +92,14 @@ class Inventory(db.Model):
             self.restock_level = data['restock_level']
             self.condition = data['condition']
             self.available = data['available']
+            if type(self.product_id) != int or type(self.quantity) != int or type(self.restock_level) != int or not isinstance(self.condition, str) or not isinstance(self.available, bool):
+                raise DataValidationError('Invalid type')
         except KeyError as error:
             raise DataValidationError('Invalid Inventory: missing ' + error.args[0])
         except TypeError as error:
-            raise DataValidationError('Invalid Inventory: body of request contained' \
-                                      'bad or no data')
+            raise DataValidationError('Invalid Inventory: body of request contained bad or no data')
         return self
-      
+
     def delete(self):
         """ Removes an Inventory from the data store """
         db.session.delete(self)

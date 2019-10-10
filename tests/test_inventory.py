@@ -113,7 +113,50 @@ class TestInventory(unittest.TestCase):
         """ Test deserialization of bad data """
         data = "this is not a dictionary"
         inventory = Inventory()
-        self.assertRaises(DataValidationError, inventory.deserialize, data)
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(data)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body of request contained bad or no data')
+
+    def test_deserialize_wrong_type_data(self):
+        """ Test deserialization of wrong type data """
+        inventory = Inventory()
+        product_id_string = {"inventory_id": 1, "product_id":"100", "quantity": 100, "restock_level":50,
+                "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(product_id_string)
+        self.assertEqual(str(error.exception), 'Invalid type')
+
+        quantity_string = {"inventory_id": 1, "product_id":100, "quantity": "100", "restock_level":50,
+        "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(quantity_string)
+        self.assertEqual(str(error.exception), 'Invalid type')
+
+        restock_level_string = {"inventory_id": 1, "product_id":100, "quantity": 100, "restock_level":"50",
+                "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(restock_level_string)
+        self.assertEqual(str(error.exception), 'Invalid type')
+
+        condition_int = {"inventory_id": 1, "product_id":100, "quantity": 100, "restock_level":"50",
+                "condition": 1, "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(condition_int)
+        self.assertEqual(str(error.exception), 'Invalid type')
+
+        available_string = {"inventory_id": 1, "product_id":100, "quantity": 100, "restock_level":"50",
+        "condition": "new", "available": "true"}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(available_string)
+        self.assertEqual(str(error.exception), 'Invalid type')
+
+    def test_deserialize_missing_data(self):
+        """ Test deserialization of missing data """
+        inventory = Inventory()
+        miss_product_id = {"quantity": 100, "restock_level":"50", "condition": "new", "available": "true"}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(miss_product_id)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: missing product_id')
 
     def test_disable_an_inventory(self):
         """ Disable an existing product """
