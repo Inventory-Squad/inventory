@@ -132,6 +132,20 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(inventory[0].condition, "used")
         self.assertEqual(inventory[0].available, True)
 
+    def test_find_by_condition(self):
+        """ Find an Inventory by its condition """
+        Inventory(product_id=1, quantity=100,
+                  restock_level=50, condition="new", available=True).save()
+        Inventory(product_id=3, quantity=80,
+                  restock_level=20, condition="used", available=True).save()
+        inventory = Inventory.find_by_condition("new")
+        self.assertNotEqual(len(inventory), 0)
+        self.assertEqual(inventory[0].product_id, 1)
+        self.assertEqual(inventory[0].quantity, 100)
+        self.assertEqual(inventory[0].restock_level, 50)
+        self.assertEqual(inventory[0].condition, 'new')
+        self.assertEqual(inventory[0].available, True)
+        
     def test_find_an_inventory_by_availability(self):
         """ Find an inventory by availability """
         Inventory(product_id=1, quantity=100, restock_level=50,
