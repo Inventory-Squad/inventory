@@ -102,3 +102,65 @@ class TestInventory(unittest.TestCase):
         # delete the inventory and make sure it isn't in the database
         inventory.delete()
         self.assertEqual(len(Inventory.all()), 0)
+    def test_find_an_inventory(self):
+        """ Find an inventory by inventory_id """
+        new_inventory = Inventory(product_id=1, quantity=100, restock_level=50,
+                                  condition="new", available=True)
+        used_inventory = Inventory(product_id=2, quantity=21, restock_level=20,
+                                   condition="used", available=True)
+        new_inventory.save()
+        used_inventory.save()
+        inventory = Inventory.find(used_inventory.inventory_id)
+        self.assertNotEqual(inventory, None)
+        self.assertEqual(inventory.product_id, 2)
+        self.assertEqual(inventory.quantity, 21)
+        self.assertEqual(inventory.restock_level, 20)
+        self.assertEqual(inventory.condition, "used")
+        self.assertEqual(inventory.available, True)
+
+    def test_find_an_inventory_by_product_id(self):
+        """ Find an inventory by product_id """
+        Inventory(product_id=1, quantity=100, restock_level=50,
+                  condition="new", available=True).save()
+        Inventory(product_id=2, quantity=21, restock_level=20,
+                  condition="used", available=True).save()
+        inventory = Inventory.find_by_product_id(2)
+        self.assertNotEqual(len(inventory), 0)
+        self.assertEqual(inventory[0].product_id, 2)
+        self.assertEqual(inventory[0].quantity, 21)
+        self.assertEqual(inventory[0].restock_level, 20)
+        self.assertEqual(inventory[0].condition, "used")
+        self.assertEqual(inventory[0].available, True)
+
+    def test_find_an_inventory_by_availability(self):
+        """ Find an inventory by availability """
+        Inventory(product_id=1, quantity=100, restock_level=50,
+                  condition="new", available=False).save()
+        Inventory(product_id=2, quantity=21, restock_level=20,
+                  condition="used", available=True).save()
+        inventory = Inventory.find_by_availability(True)
+        self.assertNotEqual(len(inventory), 0)
+        self.assertEqual(inventory[0].product_id, 2)
+        self.assertEqual(inventory[0].quantity, 21)
+        self.assertEqual(inventory[0].restock_level, 20)
+        self.assertEqual(inventory[0].condition, "used")
+        self.assertEqual(inventory[0].available, True)
+
+    def test_find_or_404_found(self):
+        """ Find or return 404 found """
+        Inventory(product_id=1, quantity=100, restock_level=50,
+                  condition="new", available=False).save()
+        used_inventory = Inventory(product_id=2, quantity=21, restock_level=20,
+                                   condition="used", available=True)
+        used_inventory.save()
+        inventory = Inventory.find_or_404(used_inventory.inventory_id)
+        self.assertNotEqual(inventory, None)
+        self.assertEqual(inventory.product_id, 2)
+        self.assertEqual(inventory.quantity, 21)
+        self.assertEqual(inventory.restock_level, 20)
+        self.assertEqual(inventory.condition, "used")
+        self.assertEqual(inventory.available, True)
+
+    def test_find_or_404_not_found(self):
+        """ Find or return 404 NOT found """
+        self.assertRaises(NotFound, Inventory.find_or_404, 0)

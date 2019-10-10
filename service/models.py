@@ -95,3 +95,19 @@ class Inventory(db.Model):
         """ Returns all of the Inventorys in the database """
         cls.logger.info('Processing all Inventorys')
         return cls.query.all()
+
+    @classmethod
+    def find(cls, inventory_id):
+        """ Find an Inventory by inventory_id """
+
+    @classmethod
+    def find_or_404(cls, inventory_id):
+        """ Find an Inventory by inventory_id """
+
+    @classmethod
+    def find_by_product_id(cls, product_id):
+        """ Find an Inventory by product_id """
+
+    @classmethod
+    def find_by_availability(cls, availability):
+        """ Find an Inventory by availability """
