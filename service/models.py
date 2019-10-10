@@ -92,6 +92,8 @@ class Inventory(db.Model):
             self.restock_level = data['restock_level']
             self.condition = data['condition']
             self.available = data['available']
+        except KeyError as error:
+            raise DataValidationError('Invalid Inventory: missing ' + error.args[0])
         except TypeError as error:
             raise DataValidationError('Invalid Inventory: body of request contained' \
                                       'bad or no data')
