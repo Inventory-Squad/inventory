@@ -80,6 +80,9 @@ class TestInventoryServer(unittest.TestCase):
         """ Get a list of Inventory """
         self._create_inventories(5)
         resp = self.app.get('/inventory')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 5)
 
     def test_query_inventory_list_by_restock(self):
         """ Query Inventories if quatity is lower than restock_level """

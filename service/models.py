@@ -147,9 +147,11 @@ class Inventory(DB.Model):
         """ Find an Inventory by availability """
 
     def find_by_restock(cls, restock):
-        """ Returns all of the Inventory that quantity lower than their restock level
+        """ Returns all of the Inventory that quantity lower than their\
+            restock level
         Args:
-            restock (boolean): if restock is true than return the list, if false than return normal list all
+            restock (boolean): if restock is true than return the list,\
+            if false than return normal list all
         """
         cls.logger.info('Processing quantity < restock_level query ...')
         if restock is True:
@@ -160,7 +162,8 @@ class Inventory(DB.Model):
     def find_by_restock_level(cls, restock_level):
         """ Returns all of the Inventory that restock level = {restock_level}
         Args:
-            restock_level (Integer): the restock level of the inventory yuo want to match
+            restock_level (Integer): the restock level of the inventory \
+            you want to match
         """
         cls.logger.info('Processing restock-level query ...')
         return cls.query.filter(cls.restock_level == restock_level)
