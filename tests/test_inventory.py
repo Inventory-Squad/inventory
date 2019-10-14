@@ -348,7 +348,7 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(inventory[1].product_id, 3)
         self.assertEqual(inventory[2].product_id, 5)
         inventory = Inventory.find_by_restock(False)
-        self.assertEqual(len(inventory), 5)
+        self.assertEqual(inventory.count(), 2)
 
     def test_find_by_restock_level(self):
         """ Find inventories by restock_level"""

@@ -146,6 +146,7 @@ class Inventory(DB.Model):
     def find_by_availability(cls, availability):
         """ Find an Inventory by availability """
 
+    @classmethod
     def find_by_restock(cls, restock):
         """ Returns all of the Inventory that quantity lower than their\
             restock level

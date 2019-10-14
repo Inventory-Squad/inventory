@@ -123,8 +123,11 @@ def list_inventory():
     inventories = []
     restock = request.args.get('restock')
     restock_level = request.args.get('restock-level')
-    if restock == "true":
-        inventories = Inventory.find_by_restock(True)
+    if restock:
+        if restock == "true":
+            inventories = Inventory.find_by_restock(True)
+        elif restock == "false":
+            inventories = Inventory.find_by_restock(False)
     elif restock_level:
         inventories = Inventory.find_by_restock_level(restock_level)
     else:
