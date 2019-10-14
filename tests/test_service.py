@@ -25,10 +25,12 @@ import unittest
 import os
 import logging
 from flask_api import status    # HTTP Status Codes
-from service.models import Inventory, DB
+from inventory_factory import InventoryFactory
+from service.models import DB
 from service.service import app, init_db, initialize_logging
 
-DATABASE_URI = os.getenv('DATABASE_URI', 'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
+DATABASE_URI = os.getenv('DATABASE_URI',
+                         'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
 
 ######################################################################
 #  T E S T   C A S E S
