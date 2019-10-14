@@ -94,7 +94,7 @@ class TestInventory(unittest.TestCase):
         inventory.condition = "used"
         inventory.available = False
         inventory.save()
-        self.assertEqual(inventory.id, 1)
+        self.assertEqual(inventory.inventory_id, 1)
         # Fetch it back and make sure the id hasn't change
         # but the data did change
         inventory = Inventory.all()
