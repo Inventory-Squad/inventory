@@ -85,8 +85,42 @@ class TestInventoryServer(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 5)
 
-######################################################################
-#   M A I N
-######################################################################
-if __name__ == '__main__':
-    unittest.main()
+    def test_query_inventory_list_by_restock(self):
+        """ Query Inventories if quatity is lower than restock_level """
+        inventories = []
+        for _ in range(5):
+            test = Inventory(product_id=_, quantity=_, restock_level=3)
+            test.save()
+            inventories.append(test)
+        resp = self.app.get('/inventory',
+                            query_string='restock=true')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 3)
+        resp = self.app.get('/inventory',
+                            query_string='restock=false')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+
+    def test_query_inventory_list_by_restock_level(self):
+        """ Query Inventories by restock_level """
+        inventories = []
+        for _ in range(0, 2):
+            test = Inventory(product_id=_, quantity=_, restock_level=20)
+            test.save()
+            inventories.append(test)
+        for _ in range(2, 5):
+            test = Inventory(product_id=_, quantity=_, restock_level=50)
+            test.save()
+            inventories.append(test)
+        resp = self.app.get('/inventory',
+                            query_string='restock-level={}'.format(20))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+        resp = self.app.get('/inventory',
+                            query_string='restock-level={}'.format(50))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 3)
