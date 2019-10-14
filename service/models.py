@@ -14,13 +14,11 @@
 
 """
 Models for Inventory Service
-
 All of the models are stored in this module
-
 Models
 ------
-The inventory resource keeps track of how many of each product we have in our warehouse
-
+The inventory resource keeps track of how many
+of each product we have in our warehouse
 Attributes:
 -----------
 inventory_id (int) readonly
@@ -29,7 +27,6 @@ quantity (int)
 restock_level (int) (when to order more )
 condition (string) ( new / open box / used )
 available (boolean)
-
 """
 import logging
 from flask_sqlalchemy import SQLAlchemy
@@ -43,7 +40,6 @@ class DataValidationError(Exception):
 class Inventory(DB.Model):
     """
     Class that represents an inventory
-
     This version uses a relational database for persistence which is hidden
     from us by SQLAlchemy's object relational mappings (ORM)
     """
@@ -102,10 +98,13 @@ class Inventory(DB.Model):
             if not isinstance(self.available, bool):
                 raise TypeError('available required bool')
         except KeyError as error:
-            raise DataValidationError('Invalid Inventory: missing ' + error.args[0])
+            raise DataValidationError('Invalid Inventory: missing '
+                                      + error.args[0])
         except TypeError as error:
-            raise DataValidationError('Invalid Inventory: body of request contained ' \
-                                      'bad or no data : ' + error.args[0])
+            raise DataValidationError('Invalid Inventory: body of ' \
+                                      'request contained ' \
+                                      'bad or no data : ' \
+                                      + error.args[0])
         return self
 
     def delete(self):

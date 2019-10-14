@@ -26,7 +26,8 @@ from werkzeug.exceptions import NotFound
 from service.models import Inventory, DataValidationError, DB
 from service import app
 
-DATABASE_URI = os.getenv('DATABASE_URI', 'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
+DATABASE_URI = os.getenv('DATABASE_URI',
+                         'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
 
 ######################################################################
 #  T E S T   C A S E S
@@ -84,7 +85,8 @@ class TestInventory(unittest.TestCase):
     def test_update_inventory(self):
         """ Update an existing inventory """
         inventory = Inventory(product_id=1, quantity=100,
-                              restock_level=50, condition="new", available=True)
+                              restock_level=50, condition="new",
+                              available=True)
         inventory.save()
         self.assertEqual(inventory.inventory_id, 1)
         # Change it and save it

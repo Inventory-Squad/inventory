@@ -22,8 +22,10 @@ from service.models import Inventory
 class InventoryFactory(factory.Factory):
     """ Creates fake inventory that you don't have to feed """
     class Meta:
+        """ Assign Inventory to model """
         model = Inventory
-    product_id = FuzzyInteger(1,5)
+    inventory_id = factory.Sequence(lambda n: n)
+    product_id = FuzzyInteger(1, 5)
     quantity = FuzzyInteger(0, 100)
     restock_level = FuzzyInteger(5, 20)
     condition = FuzzyChoice(choices=['new', 'open_box', 'used'])

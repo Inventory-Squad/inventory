@@ -1,6 +1,6 @@
 [pre-commit-hook]
- limit=9.0
- max-line-length=79
- ignored-classes=optparse.Values,thread._local,_thread._local,scoped_session
- generated-members=warning, error, info, critical, handlers, removeHandler, addHandler, setLevel, Column, Integer, String, Boolean, add, save, commit, delete, serialize
- disable=invalid-name, global-statement
+limit=9.0
+max-line-length=79
+ignored-classes=optparse.Values,thread._local,_thread._local,scoped_session
+generated-members=warning, error, info, critical, handlers, removeHandler, addHandler, setLevel, Column, Integer, String, Boolean, add, save, commit, delete, serialize
+disable=invalid-name, global-statement
