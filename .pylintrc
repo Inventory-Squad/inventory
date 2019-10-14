@@ -1,2 +1,4 @@
 [pre-commit-hook]
  limit=9.0
+ ignored-classes=optparse.Values,thread._local,_thread._local,scoped_session
+ generated-members=Column,Integer,Boolean,String

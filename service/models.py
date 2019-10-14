@@ -35,13 +35,12 @@ import logging
 from flask_sqlalchemy import SQLAlchemy
 
 # Create the SQLAlchemy object to be initialized later in init_db()
-db = SQLAlchemy()
+DB = SQLAlchemy()
 
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
-    pass
 
-class Inventory(db.Model):
+class Inventory(DB.Model):
     """
     Class that represents an inventory
 
@@ -52,24 +51,24 @@ class Inventory(db.Model):
     app = None
 
     # Table Schema
-    inventory_id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer)
-    quantity = db.Column(db.Integer)
-    restock_level = db.Column(db.Integer)
-    condition = db.Column(db.String(10))
-    available = db.Column(db.Boolean())
+    inventory_id = DB.Column(DB.Integer, primary_key=True)
+    product_id = DB.Column(DB.Integer)
+    quantity = DB.Column(DB.Integer)
+    restock_level = DB.Column(DB.Integer)
+    condition = DB.Column(DB.String(10))
+    available = DB.Column(DB.Boolean())
 
     def __repr__(self):
         return '<Inventory %r>' % (self.inventory_id)
 
     def save(self):
         """
-        Saves an Inventory to db
+        Saves an Inventory to DB
         """
         Inventory.logger.info('Saving %s', self.inventory_id)
         if not self.inventory_id:
-            db.session.add(self)
-        db.session.commit()
+            DB.session.add(self)
+        DB.session.commit()
 
     def serialize(self):
         """ Serializes an Inventory into a dictionary """
@@ -92,15 +91,15 @@ class Inventory(db.Model):
             self.restock_level = data['restock_level']
             self.condition = data['condition']
             self.available = data['available']
-            if type(self.product_id) is not int:
+            if not isinstance(self.product_id, int):
                 raise TypeError('product_id required int')
-            if type(self.quantity) is not int:
+            if not isinstance(self.quantity, int):
                 raise TypeError('quantity required int')
-            if type(self.restock_level) is not int:
+            if not isinstance(self.restock_level, int):
                 raise TypeError('restock_level required int')
-            if type(self.condition) is not str:
+            if not isinstance(self.condition, str):
                 raise TypeError('condition required string')
-            if type(self.available) is not bool:
+            if not isinstance(self.available, bool):
                 raise TypeError('available required bool')
         except KeyError as error:
             raise DataValidationError('Invalid Inventory: missing ' + error.args[0])
@@ -111,8 +110,8 @@ class Inventory(db.Model):
 
     def delete(self):
         """ Removes an Inventory from the data store """
-        db.session.delete(self)
-        db.session.commit()
+        DB.session.delete(self)
+        DB.session.commit()
 
     @classmethod
     def init_db(cls, app):
@@ -120,9 +119,9 @@ class Inventory(db.Model):
         cls.logger.info('Initializing database')
         cls.app = app
         # This is where we initialize SQLAlchemy from the Flask app
-        db.init_app(app)
+        DB.init_app(app)
         app.app_context().push()
-        db.create_all()  # make our sqlalchemy tables
+        DB.create_all()  # make our sqlalchemy tables
 
     @classmethod
     def all(cls):

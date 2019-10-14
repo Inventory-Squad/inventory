@@ -23,7 +23,7 @@ Test cases can be run with:
 import unittest
 import os
 from werkzeug.exceptions import NotFound
-from service.models import Inventory, DataValidationError, db
+from service.models import Inventory, DataValidationError, DB
 from service import app
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
@@ -47,12 +47,12 @@ class TestInventory(unittest.TestCase):
 
     def setUp(self):
         Inventory.init_db(app)
-        db.drop_all()    # clean up the last tests
-        db.create_all()  # make our sqlalchemy tables
+        DB.drop_all()    # clean up the last tests
+        DB.create_all()  # make our sqlalchemy tables
 
     def tearDown(self):
-        db.session.remove()
-        db.drop_all()
+        DB.session.remove()
+        DB.drop_all()
 
     def test_create_an_inventory(self):
         """ Create an inventory and assert that it exists """
@@ -276,7 +276,7 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(inventory[0].restock_level, 50)
         self.assertEqual(inventory[0].condition, 'new')
         self.assertEqual(inventory[0].available, True)
-        
+
     def test_find_an_inventory_by_availability(self):
         """ Find an inventory by availability """
         Inventory(product_id=1, quantity=100, restock_level=50,
@@ -309,4 +309,3 @@ class TestInventory(unittest.TestCase):
     def test_find_or_404_not_found(self):
         """ Find or return 404 NOT found """
         self.assertRaises(NotFound, Inventory.find_or_404, 0)
-
