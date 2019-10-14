@@ -25,8 +25,7 @@ import unittest
 import os
 import logging
 from flask_api import status    # HTTP Status Codes
-from inventory_factory import InventoryFactory
-from service.models import DB
+from service.models import DB, Inventory
 from service.service import app, init_db, initialize_logging
 
 DATABASE_URI = os.getenv('DATABASE_URI',
