@@ -25,9 +25,7 @@ import unittest
 import os
 import logging
 from flask_api import status    # HTTP Status Codes
-from unittest.mock import MagicMock, patch
-from service.models import Inventory, DataValidationError, db
-from inventory_factory import InventoryFactory
+from service.models import Inventory, DB
 from service.service import app, init_db, initialize_logging
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
@@ -52,19 +50,21 @@ class TestInventoryServer(unittest.TestCase):
     def setUp(self):
         """ Runs before each test """
         init_db()
-        db.drop_all()
-        db.create_all()
+        DB.drop_all()
+        DB.create_all()
         self.app = app.test_client()
 
     def tearDown(self):
-        db.session.remove()
-        db.drop_all()
+        DB.session.remove()
+        DB.drop_all()
 
-    def _create_inventories(self, count):
+    @classmethod
+    def _create_inventories(cls, count):
         """ Factory method to create inventory in bulk """
         lists = []
         for _ in range(count):
-            test = InventoryFactory()
+            test = Inventory(product_id=1, quantity=100, restock_level=50,
+                             condition="new", available=True)
             test.save()
             lists.append(test)
         return lists
