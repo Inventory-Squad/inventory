@@ -30,7 +30,7 @@ available (boolean)
 """
 import logging
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import and_, or_
+from sqlalchemy.sql import and_
 
 # Create the SQLAlchemy object to be initialized later in init_db()
 DB = SQLAlchemy()
@@ -169,7 +169,7 @@ class Inventory(DB.Model):
             want to match
         """
         return cls.query.filter(cls.condition == condition)
-    
+
     @classmethod
     def find_by_condition_with_pid(cls, condition, pid):
         """ Find an Inventory by condition and product_id
@@ -179,7 +179,8 @@ class Inventory(DB.Model):
             product_id (int): the product_id of the Inventory you
             want to match
         """
-        return cls.query.filter(and_(cls.condition == condition, cls.product_id == pid))
+        return cls.query.filter(
+            and_(cls.condition == condition, cls.product_id == pid))
 
     @classmethod
     def find_by_restock(cls, restock):
