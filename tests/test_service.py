@@ -27,6 +27,7 @@ import logging
 from flask_api import status    # HTTP Status Codes
 from service.models import DB, Inventory
 from service.service import app, init_db, initialize_logging
+from inventory_factory import InventoryFactory
 
 DATABASE_URI = os.getenv('DATABASE_URI',
                          'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
@@ -76,6 +77,54 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data['name'], 'Inventory REST API Service')
+
+    def test_create_inventory(self):
+        """ Create a new Inventory """
+        test_inventory = InventoryFactory()
+        resp = self.app.post('/inventory',
+                             json=test_inventory.serialize(),
+                             content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        # Make sure location header is set
+        location = resp.headers.get('Location', None)
+        self.assertIsNotNone(location)
+        # Check the data is correct
+        new_inventory = resp.get_json()
+        self.assertEqual(new_inventory['product_id'],
+                         test_inventory.product_id,
+                         "product_id do not match")
+        self.assertEqual(new_inventory['quantity'],
+                         test_inventory.quantity,
+                         "quantity do not match")
+        self.assertEqual(new_inventory['restock_level'],
+                         test_inventory.restock_level,
+                         "restock_level does not match")
+        self.assertEqual(new_inventory['condition'],
+                         test_inventory.condition,
+                         "condition does not match")
+        self.assertEqual(new_inventory['available'],
+                         test_inventory.available,
+                         "available does not match")
+        # Check that the location header was correct
+        resp = self.app.get(location,
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        new_inventory = resp.get_json()
+        self.assertEqual(new_inventory['product_id'],
+                         test_inventory.product_id,
+                         "product_id do not match")
+        self.assertEqual(new_inventory['quantity'],
+                         test_inventory.quantity,
+                         "quantity do not match")
+        self.assertEqual(new_inventory['restock_level'],
+                         test_inventory.restock_level,
+                         "restock_level does not match")
+        self.assertEqual(new_inventory['condition'],
+                         test_inventory.condition,
+                         "condition does not match")
+        self.assertEqual(new_inventory['available'],
+                         test_inventory.available,
+                         "available does not match")
 
     def test_get_inventory_list(self):
         """ Get a list of Inventory """
