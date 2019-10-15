@@ -8,9 +8,9 @@
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
 
 """
 
@@ -30,16 +30,11 @@ PUT /inventory/product_id/{product_id} // to disable the product #25
 
 """
 
-import os
 import sys
 import logging
-from flask import Flask, jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, url_for, make_response, abort
 from flask_api import status    # HTTP Status Codes
-from werkzeug.exceptions import NotFound
 
-# For this example we'll use SQLAlchemy, a popular ORM that supports a
-# variety of backends including SQLite, MySQL, and PostgreSQL
-from flask_sqlalchemy import SQLAlchemy
 from service.models import Inventory, DataValidationError
 
 # Import Flask application
@@ -113,13 +108,26 @@ def index():
 ######################################################################
 # LIST ALL InventoryS
 ######################################################################
+# GET request to /inventory?restock=true
+# GET request to /inventory?restock-level={restock-level-value}
+
 @app.route('/inventory', methods=['GET'])
 def list_inventory():
     """ Returns all of the inventory """
     app.logger.info('Request for inventory list')
-    inventory = []
-    inventory = Inventory.all()
-    results = [e.serialize() for e in inventory]
+    inventories = []
+    restock = request.args.get('restock')
+    restock_level = request.args.get('restock-level')
+    if restock:
+        if restock == "true":
+            inventories = Inventory.find_by_restock(True)
+        elif restock == "false":
+            inventories = Inventory.find_by_restock(False)
+    elif restock_level:
+        inventories = Inventory.find_by_restock_level(restock_level)
+    else:
+        inventories = Inventory.all()
+    results = [e.serialize() for e in inventories]
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 ######################################################################
@@ -135,7 +143,8 @@ def check_content_type(content_type):
     """ Checks that the media type is correct """
     if request.headers['Content-Type'] == content_type:
         return
-    app.logger.error('Invalid Content-Type: %s', request.headers['Content-Type'])
+    app.logger.error('Invalid Content-Type: %s',
+                     request.headers['Content-Type'])
     abort(415, 'Content-Type must be {}'.format(content_type))
 
 def initialize_logging(log_level=logging.INFO):
