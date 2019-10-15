@@ -224,3 +224,30 @@ class TestInventoryServer(unittest.TestCase):
                             json=inventory,
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_query_by_condition(self):
+        """ Query an Inventory by Condition """
+        inventories = self._create_inventories(10)
+        test_condition = inventories[0].condition
+        test_pid = inventories[0].product_id
+        condition_inventories = [
+            i for i in inventories if i.condition == test_condition]
+        pid_condition_inventories = [i for i in inventories if (
+            i.condition == test_condition and i.product_id == test_pid)]
+        # /inventory?condition={condition}
+        resp = self.app.get('/inventory',
+                            query_string='condition={}'.format(test_condition))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(condition_inventories))
+        for i in data:
+            self.assertEqual(i['condition'], test_condition)
+        # /inventory?prduct-id={pid}&condition={condition}
+        resp = self.app.get('/inventory',
+                            query_string='product-id={0}&condition={1}'.format(test_pid, test_condition))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(pid_condition_inventories))
+        for i in data:
+            self.assertEqual(i['condition'], test_condition)
+            self.assertEqual(i['product_id'], test_pid)
