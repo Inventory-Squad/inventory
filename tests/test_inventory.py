@@ -283,7 +283,7 @@ class TestInventory(unittest.TestCase):
         Inventory(product_id=2, quantity=21, restock_level=20,
                   condition="used", available=True).save()
         inventory = Inventory.find_by_product_id(2)
-        self.assertNotEqual(len(inventory), 0)
+        self.assertEqual(inventory.count(), 1)
         self.assertEqual(inventory[0].product_id, 2)
         self.assertEqual(inventory[0].quantity, 21)
         self.assertEqual(inventory[0].restock_level, 20)
@@ -297,7 +297,7 @@ class TestInventory(unittest.TestCase):
         Inventory(product_id=3, quantity=80,
                   restock_level=20, condition="used", available=True).save()
         inventory = Inventory.find_by_condition("new")
-        self.assertNotEqual(len(inventory), 0)
+        self.assertEqual(inventory.count(), 1)
         self.assertEqual(inventory[0].product_id, 1)
         self.assertEqual(inventory[0].quantity, 100)
         self.assertEqual(inventory[0].restock_level, 50)
@@ -311,7 +311,7 @@ class TestInventory(unittest.TestCase):
         Inventory(product_id=2, quantity=21, restock_level=20,
                   condition="used", available=True).save()
         inventory = Inventory.find_by_availability(True)
-        self.assertNotEqual(len(inventory), 0)
+        self.assertEqual(inventory.count(), 1)
         self.assertEqual(inventory[0].product_id, 2)
         self.assertEqual(inventory[0].quantity, 21)
         self.assertEqual(inventory[0].restock_level, 20)
