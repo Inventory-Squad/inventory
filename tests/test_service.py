@@ -227,7 +227,7 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_query_by_condition(self):
         """ Query an Inventory by Condition """
-        inventories = self._create_inventories(10)
+        inventories = self._create_inventories(5)
         test_condition = inventories[0].condition
         test_pid = inventories[0].product_id
         condition_inventories = [
@@ -242,9 +242,10 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(len(data), len(condition_inventories))
         for i in data:
             self.assertEqual(i['condition'], test_condition)
-        # /inventory?prduct-id={pid}&condition={condition}
+        # /inventory?product-id={pid}&condition={condition}
         resp = self.app.get('/inventory',
-                            query_string='product-id={0}&condition={1}'.format(test_pid, test_condition))
+                            query_string='product-id={0}&condition={1}'.format(
+                              test_pid, test_condition))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), len(pid_condition_inventories))
