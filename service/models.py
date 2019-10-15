@@ -129,21 +129,45 @@ class Inventory(DB.Model):
         return cls.query.all()
 
     @classmethod
-
     def find(cls, inventory_id):
         """ Find an Inventory by inventory_id """
+        cls.logger.info('Processing lookup for inventory_id %s ...',
+                        inventory_id)
+        return cls.query.get(inventory_id)
 
     @classmethod
     def find_or_404(cls, inventory_id):
         """ Find an Inventory by inventory_id """
+        cls.logger.info('Processing lookup or 404 for inventory_id %s ...',
+                        inventory_id)
+        return cls.query.get_or_404(inventory_id)
 
     @classmethod
     def find_by_product_id(cls, product_id):
-        """ Find an Inventory by product_id """
+        """ Find an Inventory by product_id
+            Args:
+            product_id (int): the product_id of the Inventory you
+            want to match
+        """
+        return cls.query.filter(cls.product_id == product_id)
 
     @classmethod
-    def find_by_availability(cls, availability):
-        """ Find an Inventory by availability """
+    def find_by_availability(cls, available):
+        """ Find an Inventory by availability
+        Args:
+            available (boolean): the availability of the Inventory you
+            want to match
+        """
+        return cls.query.filter(cls.available == available)
+
+    @classmethod
+    def find_by_condition(cls, condition):
+        """ Find an Inventory by condition
+        Args:
+            condition (string): the condition of the Inventory you
+            want to match
+        """
+        return cls.query.filter(cls.condition == condition)
 
     @classmethod
     def find_by_restock(cls, restock):
