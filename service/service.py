@@ -131,6 +131,22 @@ def list_inventory():
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 ######################################################################
+# DELETE AN INVENTORY
+######################################################################
+@app.route('/inventory/<int:inventory_id>', methods=['DELETE'])
+def delete_inventory(inventory_id):
+    """
+    Delete an inventory
+    This endpoint will delete an inventory based on the id specified
+    in the path
+    """
+    app.logger.info('Request to delete inventory with id: %s', inventory_id)
+    inventory = Inventory.find(inventory_id)
+    if inventory:
+        inventory.delete()
+    return make_response('', status.HTTP_204_NO_CONTENT)
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
