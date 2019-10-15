@@ -157,7 +157,7 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # get the inventory again
         resp = self.app.get(
-            '/inventory/{}'.format(inventory['inventory_id']), 
+            '/inventory/{}'.format(inventory['inventory_id']),
             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_inventory = resp.get_json()
