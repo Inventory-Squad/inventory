@@ -24,6 +24,7 @@ Test cases can be run with the following:
 import unittest
 import os
 import logging
+import json
 from flask_api import status    # HTTP Status Codes
 from service.models import DB, Inventory
 from service.service import app, init_db, initialize_logging
@@ -124,3 +125,52 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 3)
+
+    def test_update_inventory(self):
+        """ Update an existing Inventory """
+        test_inventory = {"inventory_id": 1,
+                          "product_id": 2,
+                          "quantity": 100,
+                          "restock_level": 40,
+                          "condition": 'new',
+                          "available": True}
+        resp = self.app.post('/inventory',
+                             json=json.dumps(test_inventory),
+                             content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        inventory = resp.get_json()
+        self.assertEqual(inventory['condition'], 'new')
+        self.assertEqual(inventory['inventory_id'], 1)
+        # self._create_inventories(100)
+        # resp = self.app.get('/inventory')
+        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # data = resp.get_json()
+        # for i in data:
+        #     if i['condition'] == 'new':
+        #         inventory = i
+        #         break
+        # update the inventory
+        inventory['condition'] = 'used'
+        resp = self.app.put('/inventory/{}'.format(inventory['inventory_id']),
+                            json=inventory,
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # get the inventory again
+        resp = self.app.get(
+            '/inventory/{}'.format(inventory['inventory_id']), content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_inventory = resp.get_json()
+        self.assertEqual(updated_inventory['condition'], 'used')
+        # test updating an inventory with wrong inventory_id
+        wrong_inventory_id = 2
+        resp = self.app.put('/inventory/{}'.format(wrong_inventory_id),
+                            json=inventory,
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        # test updating an inventory with bad data
+        inventory['product_id'] = 3
+        inventory['wrong_attr'] = 'wrong'
+        resp = self.app.put('/inventory/{}'.format(inventory['inventory_id']),
+                            json=inventory,
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
