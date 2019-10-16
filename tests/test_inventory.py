@@ -205,6 +205,15 @@ class TestInventory(unittest.TestCase):
     def test_deserialize_wrong_type_data(self):
         """ Test deserialization of wrong type data """
         inventory = Inventory()
+        product_id_boolean = {"inventory_id": 1, "product_id": True,\
+                             "quantity": 100, "restock_level":50,
+                             "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(product_id_boolean)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : product_id required int')
+
         product_id_string = {"inventory_id": 1, "product_id":"100",\
                              "quantity": 100, "restock_level":50,
                              "condition": "new", "available": True}
@@ -214,6 +223,15 @@ class TestInventory(unittest.TestCase):
                          ' of request contained '\
                          'bad or no data : product_id required int')
 
+        quantity_boolean = {"inventory_id": 1, "product_id":100,\
+                           "quantity": True, "restock_level":50,\
+                           "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(quantity_boolean)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : quantity required int')
+
         quantity_string = {"inventory_id": 1, "product_id":100,\
                            "quantity": "100", "restock_level":50,\
                            "condition": "new", "available": True}
@@ -222,6 +240,15 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
                          ' of request contained '\
                          'bad or no data : quantity required int')
+
+        restock_level_bool = {"inventory_id": 1, "product_id":100,\
+                                "quantity": 100, "restock_level": True,
+                                "condition": "new", "available": True}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(restock_level_bool)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
+                         ' of request contained '\
+                         'bad or no data : restock_level required int')
 
         restock_level_string = {"inventory_id": 1, "product_id":100,\
                                 "quantity": 100, "restock_level":"50",
@@ -240,6 +267,15 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(str(error.exception), 'Invalid Inventory: body'\
                          ' of request contained '\
                          'bad or no data : condition required string')
+
+        available_int = {"inventory_id": 1, "product_id":100,\
+                            "quantity": 100, "restock_level":50,
+                            "condition": "new", "available": 1}
+        with self.assertRaises(DataValidationError) as error:
+            inventory.deserialize(available_int)
+        self.assertEqual(str(error.exception), 'Invalid Inventory: '\
+                         'body of request contained '\
+                         'bad or no data : available required bool')
 
         available_string = {"inventory_id": 1, "product_id":100,\
                             "quantity": 100, "restock_level":50,

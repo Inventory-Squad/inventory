@@ -348,7 +348,7 @@ class TestInventoryServer(unittest.TestCase):
     #####  Mock data #####
     @patch('service.models.Inventory.find_by_condition')
     def test_bad_request(self, bad_request_mock):
-        """ Test a Bad Request error from find_by_condition """
+        """ Test a bad request error from find_by_condition """
         bad_request_mock.side_effect = DataValidationError()
         resp = self.app.get('/inventory', query_string='condition=wrong')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
@@ -361,6 +361,6 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR )
 
     def test_invalid_method_request(self):
-        """ Test a Invalid Request error """
+        """ Test an invalid request error """
         resp = self.app.delete('/inventory', content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
