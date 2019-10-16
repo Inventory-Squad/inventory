@@ -159,7 +159,7 @@ def disable_inventory(product_id):
     """
     Disable an Inventory
     This endpoint will update the availability of an Inventory to FALSE
-    based on the body that is posted
+    based on the id specified in the path
     """
     app.logger.info('Request to disable inventory with id: %s', product_id)
     check_content_type('application/json')
