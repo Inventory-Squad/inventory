@@ -175,6 +175,19 @@ class TestInventoryServer(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 3)
 
+
+    def test_delete_inventory(self):
+        """ Delete an inventory """
+        inventory = self._create_inventories(1)[0]
+        resp = self.app.delete('/inventory/{}'.format(inventory.inventory_id),
+                               content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)
+        # make sure they are deleted
+        resp = self.app.get('/inventory/{}'.format(inventory.inventory_id),
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_update_inventory(self):
         """ Update an existing Inventory """
         test_inventory = {"inventory_id": 1,
