@@ -151,6 +151,33 @@ def list_inventory():
     results = [e.serialize() for e in inventories]
     return make_response(jsonify(results), status.HTTP_200_OK)
 
+
+######################################################################
+# DISABLE AN EXISTING INVENTORY
+######################################################################
+@app.route('/inventory/disable/<int:product_id>', methods=['PUT'])
+def disable_inventory(product_id):
+    """
+    Disable an Inventory
+    This endpoint will update the availability of an Inventory to FALSE
+    based on the body that is posted
+    """
+    app.logger.info('Request to disable inventory with id: %s', product_id)
+    check_content_type('application/json')
+
+    inventory = Inventory.find_by_product_id(product_id)
+
+    if not inventory:
+        raise NotFound("Inventory with id '{}' was not found."
+                      .format(product_id))
+    for elem in inventory:
+        elem.available = False
+        elem.save()
+    return make_response(jsonify([elem.serialize() for elem in inventory]),
+                        status.HTTP_200_OK)
+
+
+
 ######################################################################
 # DELETE AN INVENTORY
 ######################################################################
