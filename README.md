@@ -92,7 +92,7 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 ##### Disable an inventory
 
-- PATH: PUT `/inventory/disable/{int:product_id}`
+- PATH: PUT `/inventory/disable/{int:product-id}`
 
 ##### Update an inventory
 
