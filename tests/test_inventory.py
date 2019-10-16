@@ -303,6 +303,13 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(inventory[0].restock_level, 50)
         self.assertEqual(inventory[0].condition, 'new')
         self.assertEqual(inventory[0].available, True)
+        inventory = Inventory.find_by_condition_with_pid('new', 1)
+        self.assertEqual(inventory.count(), 1)
+        self.assertEqual(inventory[0].product_id, 1)
+        self.assertEqual(inventory[0].quantity, 100)
+        self.assertEqual(inventory[0].restock_level, 50)
+        self.assertEqual(inventory[0].condition, 'new')
+        self.assertEqual(inventory[0].available, True)
 
     def test_find_an_inventory_by_availability(self):
         """ Find an inventory by availability """
