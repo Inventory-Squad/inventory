@@ -135,11 +135,16 @@ class TestInventory(unittest.TestCase):
 
     def test_find_by_restock(self):
         """ Find inventories if quantity lower than their restock level """
-        Inventory(product_id=1, quantity=100, restock_level=50).save()
-        Inventory(product_id=2, quantity=20, restock_level=50).save()
-        Inventory(product_id=3, quantity=30, restock_level=50).save()
-        Inventory(product_id=4, quantity=120, restock_level=50).save()
-        Inventory(product_id=5, quantity=49, restock_level=50).save()
+        Inventory(product_id=1, quantity=100, restock_level=50,
+                  condition="new", available=True).save()
+        Inventory(product_id=2, quantity=20, restock_level=50,
+                  condition="new", available=True).save()
+        Inventory(product_id=3, quantity=30, restock_level=50,
+                  condition="new", available=True).save()
+        Inventory(product_id=4, quantity=120, restock_level=50,
+                  condition="new", available=True).save()
+        Inventory(product_id=5, quantity=49, restock_level=50,
+                  condition="new", available=True).save()
         inventory = Inventory.find_by_restock(True)
         self.assertEqual(inventory.count(), 3)
         self.assertEqual(inventory[0].product_id, 2)
@@ -150,11 +155,16 @@ class TestInventory(unittest.TestCase):
 
     def test_find_by_restock_level(self):
         """ Find inventories by restock_level"""
-        Inventory(product_id=1, quantity=100, restock_level=20).save()
-        Inventory(product_id=2, quantity=20, restock_level=30).save()
-        Inventory(product_id=3, quantity=30, restock_level=50).save()
-        Inventory(product_id=4, quantity=120, restock_level=50).save()
-        Inventory(product_id=5, quantity=49, restock_level=50).save()
+        Inventory(product_id=1, quantity=100, restock_level=20,
+                  condition="new", available=True).save()
+        Inventory(product_id=2, quantity=20, restock_level=30,
+                  condition="new", available=True).save()
+        Inventory(product_id=3, quantity=30, restock_level=50,
+                  condition="new", available=True).save()
+        Inventory(product_id=4, quantity=120, restock_level=50,
+                  condition="new", available=True).save()
+        Inventory(product_id=5, quantity=49, restock_level=50,
+                  condition="new", available=True).save()
         inventory = Inventory.find_by_restock_level(20)
         self.assertEqual(inventory.count(), 1)
         inventory = Inventory.find_by_restock_level(50)
