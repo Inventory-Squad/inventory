@@ -126,6 +126,21 @@ def create_inventory():
                          {
                              'Location': 'location_url'
                          })
+######################################################################
+# RETRIEVE An Inventory
+######################################################################
+@app.route('/inventory/<int:inventory_id>', methods=['GET'])
+def get_inventory(inventory_id):
+    """
+    Retrieve a single Inventory
+    This endpoint will return an Inventory based on it's id
+    """
+    app.logger.info('Request for inventory with id: %s', inventory_id)
+    inventory = Inventory.find(inventory_id)
+    if not inventory:
+        raise NotFound("Inventory with inventory_id '{}' was not found."
+                       .format(inventory_id))
+    return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 # LIST ALL InventoryS
