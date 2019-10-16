@@ -55,9 +55,6 @@ class Inventory(DB.Model):
     condition = DB.Column(DB.String(10))
     available = DB.Column(DB.Boolean())
 
-    def __repr__(self):
-        return '<Inventory %r>' % (self.inventory_id)
-
     def save(self):
         """
         Saves an Inventory to DB
