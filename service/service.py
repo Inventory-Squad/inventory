@@ -121,7 +121,8 @@ def create_inventory():
     inventory.deserialize(request.get_json())
     inventory.save()
     message = inventory.serialize()
-    # location_url = url_for('get_inventory', inventory_id=inventory.inventory_id, _external=True)
+    # location_url = url_for('get_inventory',
+    # inventory_id=inventory.inventory_id, _external=True)
     return make_response(jsonify(message), status.HTTP_201_CREATED,
                          {
                              'Location': 'location_url'
@@ -210,6 +211,26 @@ def delete_inventory(inventory_id):
     if inventory:
         inventory.delete()
     return make_response('', status.HTTP_204_NO_CONTENT)
+
+######################################################################
+# UPDATE AN EXISTING INVENTORY
+######################################################################
+@app.route('/inventory/<int:inventory_id>', methods=['PUT'])
+def update_inventory(inventory_id):
+    """
+    Update an Inventory
+    This endpoint will update an Inventory based the body that is posted
+    """
+    app.logger.info('Request to update inventory with id: %s', inventory_id)
+    check_content_type('application/json')
+    inventory = Inventory.find(inventory_id)
+    if not inventory:
+        raise NotFound(
+            "Inventory with id '{}' was not found.".format(inventory_id))
+    inventory.deserialize(request.get_json())
+    inventory.id = inventory_id
+    inventory.save()
+    return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
