@@ -24,10 +24,11 @@ Test cases can be run with the following:
 import unittest
 import os
 import logging
+from unittest.mock import patch
 from flask_api import status    # HTTP Status Codes
-from unittest.mock import MagicMock, patch
 from service.models import DB, Inventory, DataValidationError
-from service.service import app, init_db, initialize_logging, internal_server_error
+from service.service import app, init_db, initialize_logging
+from service.service import internal_server_error
 from tests.inventory_factory import InventoryFactory
 
 DATABASE_URI = os.getenv('DATABASE_URI',
@@ -153,6 +154,15 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(new_inventory['available'],
                          test_inventory.available,
                          "available does not match")
+
+    def test_create_inventory_with_bad_data(self):
+        """ Create with wrong type"""
+        test_inventory = Inventory(product_id=1, quantity=30, restock_level=20,
+                                   condition='new', available="True")
+        resp = self.app.post('/inventory',
+                             json=test_inventory.serialize(),
+                             content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_inventory_list(self):
         """ Get a list of Inventory """
@@ -358,9 +368,19 @@ class TestInventoryServer(unittest.TestCase):
         """ Test a request with internal_server_error """
         request_mock.side_effect = internal_server_error("")
         resp = self.app.get('/inventory', query_string='condition=wrong')
-        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR )
+        self.assertEqual(resp.status_code,
+                         status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def test_invalid_method_request(self):
         """ Test a Invalid Request error """
         resp = self.app.delete('/inventory', content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_bad_content_type(self):
+        """ Bad content type return 415 """
+        test_inventory = InventoryFactory()
+        resp = self.app.post('/inventory',
+                             json=test_inventory.serialize(),
+                             content_type='text/html')
+        self.assertEqual(resp.status_code,
+                         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
