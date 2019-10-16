@@ -24,7 +24,6 @@ Test cases can be run with the following:
 import unittest
 import os
 import logging
-import json
 from flask_api import status    # HTTP Status Codes
 from service.models import DB, Inventory
 from service.service import app, init_db, initialize_logging
@@ -82,7 +81,6 @@ class TestInventoryServer(unittest.TestCase):
     def test_disable_inventory(self):
         """ Disable an existing Inventory """
         # create inventories to update
-        new_inventory = []
         test_inventory = []
         for _ in range(0, 2):
             test = Inventory(product_id=1, quantity=100, restock_level=20,
