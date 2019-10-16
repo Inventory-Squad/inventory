@@ -132,6 +132,8 @@ def create_inventory():
 ######################################################################
 # GET request to /inventory?restock=true
 # GET request to /inventory?restock-level={restock-level-value}
+# GET request to /inventory?condition=new
+# GET request to /inventory?condition=new&product-id=1
 
 @app.route('/inventory', methods=['GET'])
 def list_inventory():
@@ -140,6 +142,8 @@ def list_inventory():
     inventories = []
     restock = request.args.get('restock')
     restock_level = request.args.get('restock-level')
+    condition = request.args.get('condition')
+    pid = request.args.get('product-id')
     if restock:
         if restock == "true":
             inventories = Inventory.find_by_restock(True)
@@ -147,6 +151,10 @@ def list_inventory():
             inventories = Inventory.find_by_restock(False)
     elif restock_level:
         inventories = Inventory.find_by_restock_level(restock_level)
+    elif condition and not pid:
+        inventories = Inventory.find_by_condition(condition)
+    elif condition and pid:
+        inventories = Inventory.find_by_condition_with_pid(condition, pid)
     else:
         inventories = Inventory.all()
     results = [e.serialize() for e in inventories]
