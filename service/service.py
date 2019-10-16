@@ -151,7 +151,6 @@ def list_inventory():
     results = [e.serialize() for e in inventories]
     return make_response(jsonify(results), status.HTTP_200_OK)
 
-
 ######################################################################
 # DISABLE AN EXISTING INVENTORY
 ######################################################################
@@ -175,8 +174,6 @@ def disable_inventory(product_id):
         elem.save()
     return make_response(jsonify([elem.serialize() for elem in inventory]),
                         status.HTTP_200_OK)
-
-
 
 ######################################################################
 # DELETE AN INVENTORY
