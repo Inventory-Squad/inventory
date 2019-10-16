@@ -196,12 +196,14 @@ class TestInventoryServer(unittest.TestCase):
         inventories = []
         inventories = self._create_inventories(5)
         test_product_id = inventories[0].product_id
+        product_id = [
+            i for i in inventories if i.product_id == test_product_id]
         resp = self.app.get('/inventory',
                             query_string='product-id={}'
                             .format(test_product_id))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(len(data), 1)
+        self.assertEqual(len(data), len(product_id))
         for inventory in data:
             self.assertEqual(inventory['product_id'], test_product_id)
 
