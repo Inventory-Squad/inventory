@@ -24,7 +24,6 @@ Test cases can be run with the following:
 import unittest
 import os
 import logging
-import json
 from flask_api import status    # HTTP Status Codes
 from service.models import DB, Inventory
 from service.service import app, init_db, initialize_logging
@@ -226,7 +225,18 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_query_by_condition(self):
         """ Query an Inventory by Condition """
-        inventories = self._create_inventories(5)
+        inventories = []
+        for _ in range(0, 2):
+            test = Inventory(product_id=_, quantity=_,
+                             restock_level=20, condition='new')
+            test.save()
+            inventories.append(test)
+        for _ in range(0, 2):
+            test = Inventory(product_id=_, quantity=_,
+                             restock_level=20, condition='used')
+            test.save()
+            inventories.append(test)
+        # inventories = self._create_inventories(5)
         test_condition = inventories[0].condition
         test_pid = inventories[0].product_id
         condition_inventories = [
@@ -295,15 +305,6 @@ class TestInventoryServer(unittest.TestCase):
         inventory = resp.get_json()
         self.assertEqual(inventory['condition'], 'new')
         self.assertEqual(inventory['inventory_id'], 1)
-        # self._create_inventories(100)
-        # resp = self.app.get('/inventory')
-        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        # data = resp.get_json()
-        # for i in data:
-        #     if i['condition'] == 'new':
-        #         inventory = i
-        #         break
-        # update the inventory
         inventory['condition'] = 'used'
         resp = self.app.put('/inventory/{}'.format(inventory['inventory_id']),
                             json=inventory,
