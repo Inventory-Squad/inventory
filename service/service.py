@@ -26,7 +26,7 @@ GET /inventory?restock-level={restock-level-value} #2
 POST /inventory #6
 PUT /inventory/{inventory-id} #7
 DELETE /inventory/{inventory-id} #8
-PUT /inventory/product_id/{product_id} // to disable the product #25
+PUT /inventory/disable/{product_id} // to disable the product #25
 
 """
 
