@@ -205,7 +205,8 @@ class TestInventoryServer(unittest.TestCase):
         """ Query Inventories if quatity is lower than restock_level """
         inventories = []
         for _ in range(5):
-            test = Inventory(product_id=_, quantity=_, restock_level=3)
+            test = Inventory(product_id=_, quantity=_, restock_level=3,
+                             condition="new", available=True)
             test.save()
             inventories.append(test)
         resp = self.app.get('/inventory',
@@ -223,11 +224,13 @@ class TestInventoryServer(unittest.TestCase):
         """ Query Inventories by restock_level """
         inventories = []
         for _ in range(0, 2):
-            test = Inventory(product_id=_, quantity=_, restock_level=20)
+            test = Inventory(product_id=_, quantity=_, restock_level=20,
+                             condition="new", available=True)
             test.save()
             inventories.append(test)
         for _ in range(2, 5):
-            test = Inventory(product_id=_, quantity=_, restock_level=50)
+            test = Inventory(product_id=_, quantity=_, restock_level=50,
+                             condition="new", available=True)
             test.save()
             inventories.append(test)
         resp = self.app.get('/inventory',
@@ -245,13 +248,13 @@ class TestInventoryServer(unittest.TestCase):
         """ Query an Inventory by Condition """
         inventories = []
         for _ in range(0, 2):
-            test = Inventory(product_id=_, quantity=_,
-                             restock_level=20, condition='new')
+            test = Inventory(product_id=_, quantity=_, restock_level=20,
+                             condition='new', available=True)
             test.save()
             inventories.append(test)
         for _ in range(0, 2):
-            test = Inventory(product_id=_, quantity=_,
-                             restock_level=20, condition='used')
+            test = Inventory(product_id=_, quantity=_, restock_level=20,
+                             condition='new', available=True)
             test.save()
             inventories.append(test)
         # inventories = self._create_inventories(5)
