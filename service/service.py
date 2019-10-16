@@ -121,11 +121,11 @@ def create_inventory():
     inventory.deserialize(request.get_json())
     inventory.save()
     message = inventory.serialize()
-    # location_url = url_for('get_inventory',
-    # inventory_id=inventory.inventory_id, _external=True)
+    location_url = url_for('get_inventory',
+                           inventory_id=inventory.inventory_id, _external=True)
     return make_response(jsonify(message), status.HTTP_201_CREATED,
                          {
-                             'Location': 'location_url'
+                             'Location': location_url
                          })
 ######################################################################
 # RETRIEVE An Inventory
