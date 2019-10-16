@@ -122,15 +122,32 @@ def create_inventory():
     inventory.save()
     message = inventory.serialize()
     # location_url = url_for('get_inventory',
-    #               inventory_id=inventory.inventory_id, _external=True)
+    # inventory_id=inventory.inventory_id, _external=True)
     return make_response(jsonify(message), status.HTTP_201_CREATED,
                          {
                              'Location': 'location_url'
                          })
+######################################################################
+# RETRIEVE An Inventory
+######################################################################
+@app.route('/inventory/<int:inventory_id>', methods=['GET'])
+def get_inventory(inventory_id):
+    """
+    Retrieve a single Inventory
+    This endpoint will return an Inventory based on it's id
+    """
+    app.logger.info('Request for inventory with id: %s', inventory_id)
+    inventory = Inventory.find(inventory_id)
+    if not inventory:
+        raise NotFound("Inventory with inventory_id '{}' was not found."
+                       .format(inventory_id))
+    return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 ######################################################################
-# LIST ALL InventoryS
+# LIST ALL Inventory
 ######################################################################
+# GET request to /inventory?product-id={product-id}
+# GET request to /inventory?available={isAvailable}
 # GET request to /inventory?restock=true
 # GET request to /inventory?restock-level={restock-level-value}
 # GET request to /inventory?condition=new
@@ -144,7 +161,8 @@ def list_inventory():
     restock = request.args.get('restock')
     restock_level = request.args.get('restock-level')
     condition = request.args.get('condition')
-    pid = request.args.get('product-id')
+    product_id = request.args.get('product-id')
+    available = request.args.get('available')
     if restock:
         if restock == "true":
             inventories = Inventory.find_by_restock(True)
@@ -152,10 +170,17 @@ def list_inventory():
             inventories = Inventory.find_by_restock(False)
     elif restock_level:
         inventories = Inventory.find_by_restock_level(restock_level)
-    elif condition and not pid:
+    elif condition and not product_id:
         inventories = Inventory.find_by_condition(condition)
-    elif condition and pid:
-        inventories = Inventory.find_by_condition_with_pid(condition, pid)
+    elif condition and product_id:
+        inventories = Inventory.find_by_condition_with_pid(condition, product_id)
+    elif product_id:
+        inventories = Inventory.find_by_product_id(product_id)
+    elif available:
+        if available == 'true':
+            inventories = Inventory.find_by_availability(True)
+        elif available == 'false':
+            inventories = Inventory.find_by_availability(False)
     else:
         inventories = Inventory.all()
     results = [e.serialize() for e in inventories]
@@ -200,6 +225,26 @@ def delete_inventory(inventory_id):
     if inventory:
         inventory.delete()
     return make_response('', status.HTTP_204_NO_CONTENT)
+
+######################################################################
+# UPDATE AN EXISTING INVENTORY
+######################################################################
+@app.route('/inventory/<int:inventory_id>', methods=['PUT'])
+def update_inventory(inventory_id):
+    """
+    Update an Inventory
+    This endpoint will update an Inventory based the body that is posted
+    """
+    app.logger.info('Request to update inventory with id: %s', inventory_id)
+    check_content_type('application/json')
+    inventory = Inventory.find(inventory_id)
+    if not inventory:
+        raise NotFound(
+            "Inventory with id '{}' was not found.".format(inventory_id))
+    inventory.deserialize(request.get_json())
+    inventory.id = inventory_id
+    inventory.save()
+    return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

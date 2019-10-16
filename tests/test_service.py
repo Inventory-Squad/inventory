@@ -79,6 +79,26 @@ class TestInventoryServer(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data['name'], 'Inventory REST API Service')
 
+    def test_disable_inventory(self):
+        """ Disable an existing Inventory """
+        # create inventories to update
+        new_inventory = []
+        test_inventory = []
+        for _ in range(0, 2):
+            test = Inventory(product_id=1, quantity=100, restock_level=20,
+                             condition="new", available=True)
+            test.save()
+            test_inventory.append(test)
+
+        # disable the inventory
+        resp = self.app.put('/inventory/disable/1',
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        disabled_data = resp.get_json()
+        self.assertEqual(len(disabled_data), 2)
+        for row in resp.get_json():
+            self.assertEqual(row['available'], False)
+
     def test_create_inventory(self):
         """ Create a new Inventory """
         test_inventory = InventoryFactory()
@@ -156,7 +176,7 @@ class TestInventoryServer(unittest.TestCase):
         inventories = self._create_inventories(5)
         test_product_id = inventories[0].product_id
         resp = self.app.get('/inventory',
-                            query_string='product_id={}'
+                            query_string='product-id={}'
                             .format(test_product_id))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
@@ -229,7 +249,7 @@ class TestInventoryServer(unittest.TestCase):
         # /inventory?product-id={pid}&condition={condition}
         resp = self.app.get('/inventory',
                             query_string='product-id={0}&condition={1}'.format(
-                              test_pid, test_condition))
+                                test_pid, test_condition))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), len(pid_condition_inventories))
@@ -251,14 +271,14 @@ class TestInventoryServer(unittest.TestCase):
             test.save()
             inventories.append(test)
         resp = self.app.get('/inventory',
-                            query_string='available=True')
+                            query_string='available=true')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 2)
         for inventory in data:
             self.assertEqual(inventory['available'], True)
         resp = self.app.get('/inventory',
-                            query_string='available=False')
+                            query_string='available=false')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 3)
@@ -274,7 +294,7 @@ class TestInventoryServer(unittest.TestCase):
                           "condition": 'new',
                           "available": True}
         resp = self.app.post('/inventory',
-                             json=json.dumps(test_inventory),
+                             json=test_inventory,
                              content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         inventory = resp.get_json()
@@ -307,13 +327,7 @@ class TestInventoryServer(unittest.TestCase):
                             json=inventory,
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-        # test updating an inventory with bad data
-        inventory['product_id'] = 3
-        inventory['wrong_attr'] = 'wrong'
-        resp = self.app.put('/inventory/{}'.format(inventory['inventory_id']),
-                            json=inventory,
-                            content_type='application/json')
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
 
     def test_delete_inventory(self):
         """ Delete an inventory """
