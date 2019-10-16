@@ -62,16 +62,20 @@ class TestInventoryServer(unittest.TestCase):
         DB.session.remove()
         DB.drop_all()
 
-    @classmethod
-    def _create_inventories(cls, count):
+    def _create_inventories(self, count):
         """ Factory method to create inventory in bulk """
-        lists = []
+        inventory_list = []
         for _ in range(count):
-            test = Inventory(product_id=_, quantity=100, restock_level=50,
-                             condition="new", available=True)
-            test.save()
-            lists.append(test)
-        return lists
+            test_inventory = InventoryFactory()
+            resp = self.app.post('/inventory',
+                                 json=test_inventory.serialize(),
+                                 content_type='application/json')
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED,
+                             'Could not create test inventory')
+            new_inventory = resp.get_json()
+            test_inventory.inventory_id = new_inventory['inventory_id']
+            inventory_list.append(test_inventory)
+        return inventory_list
 
     def test_index(self):
         """ Test the Home Page """
