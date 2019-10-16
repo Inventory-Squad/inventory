@@ -155,6 +155,15 @@ class TestInventoryServer(unittest.TestCase):
                          test_inventory.available,
                          "available does not match")
 
+    def test_create_inventory_with_bad_data(self):
+        """ Create with wrong type"""
+        test_inventory = Inventory(product_id=1, quantity=30, restock_level=20,
+                                   condition='new', available="True")
+        resp = self.app.post('/inventory',
+                             json=test_inventory.serialize(),
+                             content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_get_inventory_list(self):
         """ Get a list of Inventory """
         self._create_inventories(5)
@@ -366,3 +375,12 @@ class TestInventoryServer(unittest.TestCase):
         """ Test an invalid request error """
         resp = self.app.delete('/inventory', content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_bad_content_type(self):
+        """ Bad content type return 415 """
+        test_inventory = InventoryFactory()
+        resp = self.app.post('/inventory',
+                             json=test_inventory.serialize(),
+                             content_type='text/html')
+        self.assertEqual(resp.status_code,
+                         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
