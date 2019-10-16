@@ -66,7 +66,7 @@ class TestInventoryServer(unittest.TestCase):
         """ Factory method to create inventory in bulk """
         lists = []
         for _ in range(count):
-            test = Inventory(product_id=1, quantity=100, restock_level=50,
+            test = Inventory(product_id=_, quantity=100, restock_level=50,
                              condition="new", available=True)
             test.save()
             lists.append(test)
@@ -135,6 +135,35 @@ class TestInventoryServer(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 5)
 
+    def test_get_inventory(self):
+        """ Get a single Inventory """
+        test_inventory = self._create_inventories(1)[0]
+        resp = self.app.get('/inventory/{}'
+                            .format(test_inventory.inventory_id),
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data['product_id'], test_inventory.product_id)
+
+    def test_get_inventory_not_found(self):
+        """ Get an Inventory thats not found """
+        resp = self.app.get('/inventory/0')
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_query_inventory_list_by_product_id(self):
+        """ Query an Inventory by product id """
+        inventories = []
+        inventories = self._create_inventories(5)
+        test_product_id = inventories[0].product_id
+        resp = self.app.get('/inventory',
+                            query_string='product_id={}'
+                            .format(test_product_id))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 1)
+        for inventory in data:
+            self.assertEqual(inventory['product_id'], test_product_id)
+
     def test_query_inventory_list_by_restock(self):
         """ Query Inventories if quatity is lower than restock_level """
         inventories = []
@@ -175,6 +204,7 @@ class TestInventoryServer(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 3)
 
+<<<<<<< HEAD
 
     def test_delete_inventory(self):
         """ Delete an inventory """
@@ -187,6 +217,35 @@ class TestInventoryServer(unittest.TestCase):
         resp = self.app.get('/inventory/{}'.format(inventory.inventory_id),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+=======
+    def test_query_inventory_list_by_availability(self):
+        """ Query an Inventory by availability """
+        inventories = []
+        for _ in range(0, 2):
+            test = Inventory(product_id=_, quantity=30, restock_level=20,
+                             condition='new', available=True)
+            test.save()
+            inventories.append(test)
+        for _ in range(2, 5):
+            test = Inventory(product_id=_, quantity=30, restock_level=50,
+                             condition='new', available=False)
+            test.save()
+            inventories.append(test)
+        resp = self.app.get('/inventory',
+                            query_string='available=True')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+        for inventory in data:
+            self.assertEqual(inventory['available'], True)
+        resp = self.app.get('/inventory',
+                            query_string='available=False')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 3)
+        for inventory in data:
+            self.assertEqual(inventory['available'], False)
+>>>>>>> Add test for find by id, pid, available
 
     def test_update_inventory(self):
         """ Update an existing Inventory """
