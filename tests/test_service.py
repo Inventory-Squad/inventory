@@ -27,9 +27,9 @@ import logging
 from unittest.mock import patch
 from flask_api import status    # HTTP Status Codes
 from service.models import DB, Inventory, DataValidationError
-from service.service import app, init_db, initialize_logging, \
-internal_server_error
-from tests.inventory_factory import InventoryFactory
+from service.service import app, init_db, initialize_logging
+from service.service import internal_server_error
+from inventory_factory import InventoryFactory
 
 DATABASE_URI = os.getenv('DATABASE_URI',
                          'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
@@ -254,7 +254,7 @@ class TestInventoryServer(unittest.TestCase):
             inventories.append(test)
         for _ in range(0, 2):
             test = Inventory(product_id=_, quantity=_, restock_level=20,
-                             condition='new', available=True)
+                             condition='used', available=True)
             test.save()
             inventories.append(test)
         # inventories = self._create_inventories(5)
