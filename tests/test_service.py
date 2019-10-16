@@ -266,14 +266,14 @@ class TestInventoryServer(unittest.TestCase):
             test.save()
             inventories.append(test)
         resp = self.app.get('/inventory',
-                            query_string='available=True')
+                            query_string='available=true')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 2)
         for inventory in data:
             self.assertEqual(inventory['available'], True)
         resp = self.app.get('/inventory',
-                            query_string='available=False')
+                            query_string='available=false')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 3)

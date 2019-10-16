@@ -144,9 +144,10 @@ def get_inventory(inventory_id):
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 ######################################################################
-# LIST ALL Inventorys
+# LIST ALL Inventory
 ######################################################################
 # GET request to /inventory?product-id={product-id}
+# GET request to /inventory?available={isAvailable}
 # GET request to /inventory?restock=true
 # GET request to /inventory?restock-level={restock-level-value}
 
@@ -158,6 +159,7 @@ def list_inventory():
     restock = request.args.get('restock')
     restock_level = request.args.get('restock-level')
     product_id = request.args.get('product-id')
+    available = request.args.get('available')
     if restock:
         if restock == "true":
             inventories = Inventory.find_by_restock(True)
@@ -167,6 +169,11 @@ def list_inventory():
         inventories = Inventory.find_by_restock_level(restock_level)
     elif product_id:
         inventories = Inventory.find_by_product_id(product_id)
+    elif available:
+        if available == 'true':
+            inventories = Inventory.find_by_availability(True)
+        elif available == 'false':
+            inventories = Inventory.find_by_availability(False)
     else:
         inventories = Inventory.all()
     results = [e.serialize() for e in inventories]
