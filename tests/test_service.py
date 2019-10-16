@@ -204,20 +204,34 @@ class TestInventoryServer(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 3)
 
-<<<<<<< HEAD
+    def test_query_by_condition(self):
+        """ Query an Inventory by Condition """
+        inventories = self._create_inventories(5)
+        test_condition = inventories[0].condition
+        test_pid = inventories[0].product_id
+        condition_inventories = [
+            i for i in inventories if i.condition == test_condition]
+        pid_condition_inventories = [i for i in inventories if (
+            i.condition == test_condition and i.product_id == test_pid)]
+        # /inventory?condition={condition}
+        resp = self.app.get('/inventory',
+                            query_string='condition={}'.format(test_condition))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(condition_inventories))
+        for i in data:
+            self.assertEqual(i['condition'], test_condition)
+        # /inventory?product-id={pid}&condition={condition}
+        resp = self.app.get('/inventory',
+                            query_string='product-id={0}&condition={1}'.format(
+                              test_pid, test_condition))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(pid_condition_inventories))
+        for i in data:
+            self.assertEqual(i['condition'], test_condition)
+            self.assertEqual(i['product_id'], test_pid)
 
-    def test_delete_inventory(self):
-        """ Delete an inventory """
-        inventory = self._create_inventories(1)[0]
-        resp = self.app.delete('/inventory/{}'.format(inventory.inventory_id),
-                               content_type='application/json')
-        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(resp.data), 0)
-        # make sure they are deleted
-        resp = self.app.get('/inventory/{}'.format(inventory.inventory_id),
-                            content_type='application/json')
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-=======
     def test_query_inventory_list_by_availability(self):
         """ Query an Inventory by availability """
         inventories = []
@@ -245,7 +259,6 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(len(data), 3)
         for inventory in data:
             self.assertEqual(inventory['available'], False)
->>>>>>> Add test for find by id, pid, available
 
     def test_update_inventory(self):
         """ Update an existing Inventory """
@@ -297,30 +310,14 @@ class TestInventoryServer(unittest.TestCase):
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_query_by_condition(self):
-        """ Query an Inventory by Condition """
-        inventories = self._create_inventories(5)
-        test_condition = inventories[0].condition
-        test_pid = inventories[0].product_id
-        condition_inventories = [
-            i for i in inventories if i.condition == test_condition]
-        pid_condition_inventories = [i for i in inventories if (
-            i.condition == test_condition and i.product_id == test_pid)]
-        # /inventory?condition={condition}
-        resp = self.app.get('/inventory',
-                            query_string='condition={}'.format(test_condition))
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(len(data), len(condition_inventories))
-        for i in data:
-            self.assertEqual(i['condition'], test_condition)
-        # /inventory?product-id={pid}&condition={condition}
-        resp = self.app.get('/inventory',
-                            query_string='product-id={0}&condition={1}'.format(
-                              test_pid, test_condition))
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(len(data), len(pid_condition_inventories))
-        for i in data:
-            self.assertEqual(i['condition'], test_condition)
-            self.assertEqual(i['product_id'], test_pid)
+    def test_delete_inventory(self):
+        """ Delete an inventory """
+        inventory = self._create_inventories(1)[0]
+        resp = self.app.delete('/inventory/{}'.format(inventory.inventory_id),
+                               content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)
+        # make sure they are deleted
+        resp = self.app.get('/inventory/{}'.format(inventory.inventory_id),
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
