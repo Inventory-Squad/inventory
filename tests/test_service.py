@@ -99,7 +99,6 @@ class TestInventoryServer(unittest.TestCase):
         for row in resp.get_json():
             self.assertEqual(row['available'], False)
 
-
     def test_create_inventory(self):
         """ Create a new Inventory """
         test_inventory = InventoryFactory()
