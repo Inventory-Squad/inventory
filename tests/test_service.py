@@ -24,10 +24,11 @@ Test cases can be run with the following:
 import unittest
 import os
 import logging
+from unittest.mock import patch
 from flask_api import status    # HTTP Status Codes
-from unittest.mock import MagicMock, patch
 from service.models import DB, Inventory, DataValidationError
-from service.service import app, init_db, initialize_logging, internal_server_error
+from service.service import app, init_db, initialize_logging, \
+internal_server_error
 from tests.inventory_factory import InventoryFactory
 
 DATABASE_URI = os.getenv('DATABASE_URI',
@@ -358,7 +359,8 @@ class TestInventoryServer(unittest.TestCase):
         """ Test a request with internal_server_error """
         request_mock.side_effect = internal_server_error("")
         resp = self.app.get('/inventory', query_string='condition=wrong')
-        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR )
+        self.assertEqual(resp.status_code, \
+                         status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def test_invalid_method_request(self):
         """ Test an invalid request error """

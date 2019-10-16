@@ -63,9 +63,11 @@ class Inventory(DB.Model):
         if not self.inventory_id:
             DB.session.add(self)
         else:
-            Inventory.logger.info('Inventory with inventory_id: %s is exist', self.inventory_id)
+            Inventory.logger.info('Inventory with inventory_id: %s is exist', \
+                                  self.inventory_id)
         DB.session.commit()
-        Inventory.logger.info('Inventory with inventory_id: %s saved', self.inventory_id)
+        Inventory.logger.info('Inventory with inventory_id: %s saved',
+                              self.inventory_id)
 
     def serialize(self):
         """ Serializes an Inventory into a dictionary """
