@@ -63,7 +63,7 @@ If the VM is no longer needed you can remove it with:
 
 ## API Endpoint
 
-An API to allow management of inventory for an e-commerce website. It will support create, read, update, delete, list, query, and an action(disable and enable an entry).
+An API to allow management of inventory for an e-commerce website. It will support create, read, update, delete, list, query, and an action(disable an entry).
 
 ##### Create a new inventory
 
@@ -71,7 +71,7 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 ##### Get an inventory by an inventory id
 
-- PATH: GET `/inventory/{inventory-id} `
+- PATH: GET `/inventory/{int:inventory-id} `
 
 ##### List all inventory 
 
@@ -79,20 +79,21 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 ##### Query an inventory by a given attribute
 
-- By product id:  GET `/inventory?product-id={pid}`
-- By condition:  GET `/inventory?condition={condition} `
-- By condition and product id: GET `/inventory?condition={condition}&product-id={pid} `
-- By need restock or not: GET `/inventory?restock={needRestock} `
-- By restock level: GET `/inventory?restock-level={restock-level-value} `
+- By product id:  GET `/inventory?product-id={int:pid}`
+- By condition:  GET `/inventory?condition={string:condition} `
+- By condition and product id: GET `/inventory?condition={string:condition}&product-id={int:pid} `
+- By need restock or not: GET `/inventory?restock={bool:needRestock} `
+- By restock level: GET `/inventory?restock-level={int:restock-level-value} `
+- By availability: GET `/inventory?available={bool:isAvailable}`
 
 ##### Delete an inventory
 
-- PATH: DELETE `/inventory/{inventory-id} `
+- PATH: DELETE `/inventory/{int:inventory-id} `
 
 ##### Disable an inventory
 
-- PATH: PUT `/inventory/disable/{product_id}`
+- PATH: PUT `/inventory/disable/{int:product_id}`
 
 ##### Update an inventory
 
-- PATH: PUT `/inventory/{inventory-id}`
+- PATH: PUT `/inventory/{int:inventory-id}`
