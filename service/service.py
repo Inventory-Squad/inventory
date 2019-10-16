@@ -112,7 +112,7 @@ def index():
 def create_inventory():
     """
     Creates an Inventory
-    This endpoint will create a nInventory based
+    This endpoint will create an Inventory based
     the data in the body that is posted
     """
     app.logger.info('Request to create an inventory')
@@ -150,8 +150,8 @@ def get_inventory(inventory_id):
 # GET request to /inventory?available={isAvailable}
 # GET request to /inventory?restock=true
 # GET request to /inventory?restock-level={restock-level-value}
-# GET request to /inventory?condition=new
-# GET request to /inventory?condition=new&product-id=1
+# GET request to /inventory?condition={condition}
+# GET request to /inventory?condition={condition}&product-id={product-id}
 
 @app.route('/inventory', methods=['GET'])
 def list_inventory():
@@ -170,10 +170,12 @@ def list_inventory():
             inventories = Inventory.find_by_restock(False)
     elif restock_level:
         inventories = Inventory.find_by_restock_level(restock_level)
-    elif condition and not product_id:
-        inventories = Inventory.find_by_condition(condition)
-    elif condition and product_id:
-        inventories = Inventory.find_by_condition_with_pid(condition, product_id)
+    elif condition:
+        if product_id:
+            inventories = Inventory.find_by_condition_with_pid(condition,
+                                                               product_id)
+        elif not product_id:
+            inventories = Inventory.find_by_condition(condition)
     elif product_id:
         inventories = Inventory.find_by_product_id(product_id)
     elif available:
