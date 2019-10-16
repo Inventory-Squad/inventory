@@ -45,3 +45,50 @@ If the VM is no longer needed you can remove it with:
 ```bash
     vagrant destroy
 ```
+
+
+
+## Attributes
+
+| Fields        | Type                                 |
+| :------------ | :----------------------------------- |
+| inventory_id  | Integer, read only                   |
+| product_id    | Integer                              |
+| quantity      | Integer                              |
+| restock_level | Integer, when to order more          |
+| condition     | String,  {'new', 'open_box', 'used'} |
+| available     | Boolean                              |
+
+
+
+## API Endpoint
+
+An API to allow management of inventory for an e-commerce website. It will support create, read, update, delete, list, query, and an action(disable and enable an entry).
+
+##### Create a new inventory
+
+- PATH: POST `/inventory`
+
+##### Get an inventory by an inventory id
+
+- PATH: GET `/inventory/{inventory-id} `
+
+##### List all inventory 
+
+- PATH: GET `/inventory`
+
+##### Query an inventory by a given attribute
+
+- By product id:  GET `/inventory?product-id={pid}`
+- By condition:  GET `/inventory?condition={condition} `
+- By condition and product id: GET `/inventory?condition={condition}&product-id={pid} `
+- By need restock or not: GET `/inventory?restock={needRestock} `
+- By restock level: GET `/inventory?restock-level={restock-level-value} `
+
+##### Delete an inventory
+
+- PATH: DELETE `/inventory/{inventory-id} `
+
+##### Update an inventory
+
+- PATH: PUT `/inventory/disable/<product_id>' `
