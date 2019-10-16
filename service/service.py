@@ -106,6 +106,27 @@ def index():
                   ), status.HTTP_200_OK
 
 ######################################################################
+# ADD an Inventory
+######################################################################
+@app.route('/inventory', methods=['POST'])
+def create_inventory():
+    """
+    Creates an Inventory
+    This endpoint will create a nInventory based the data in the body that is posted
+    """
+    app.logger.info('Request to create an inventory')
+    check_content_type('application/json')
+    inventory = Inventory()
+    inventory.deserialize(request.get_json())
+    inventory.save()
+    message = inventory.serialize()
+    # location_url = url_for('get_inventory', inventory_id=inventory.inventory_id, _external=True)
+    return make_response(jsonify(message), status.HTTP_201_CREATED,
+                         {
+                             'Location': 'location_url'
+                         })
+
+######################################################################
 # LIST ALL InventoryS
 ######################################################################
 # GET request to /inventory?restock=true
