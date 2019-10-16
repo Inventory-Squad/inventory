@@ -26,7 +26,7 @@ GET /inventory?restock-level={restock-level-value} #2
 POST /inventory #6
 PUT /inventory/{inventory-id} #7
 DELETE /inventory/{inventory-id} #8
-PUT /inventory/disable/{product_id} // to disable the product #25
+PUT /inventory/{product-id}/disable to disable the product #25
 
 """
 
@@ -190,7 +190,7 @@ def list_inventory():
 ######################################################################
 # DISABLE AN EXISTING INVENTORY
 ######################################################################
-@app.route('/inventory/disable/<int:product_id>', methods=['PUT'])
+@app.route('/inventory/<int:product_id>/disable', methods=['PUT'])
 def disable_inventory(product_id):
     """
     Disable an Inventory

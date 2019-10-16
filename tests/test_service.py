@@ -96,7 +96,7 @@ class TestInventoryServer(unittest.TestCase):
 
         # disable the inventory
         product_id = 1
-        resp = self.app.put('/inventory/disable/{}'.format(product_id),
+        resp = self.app.put('/inventory/{}/disable'.format(product_id),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         disabled_data = resp.get_json()
@@ -106,7 +106,7 @@ class TestInventoryServer(unittest.TestCase):
 
         # test disabling an inventory with wrong product_id
         wrong_product_id = 2
-        resp = self.app.put('/inventory/disable/{}'.format(wrong_product_id),
+        resp = self.app.put('/inventory/{}/disable'.format(wrong_product_id),
                             content_type='application/json')
         disabled_data = resp.get_json()
         self.assertEqual(len(disabled_data), 0)
