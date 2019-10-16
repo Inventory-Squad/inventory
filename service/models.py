@@ -63,9 +63,11 @@ class Inventory(DB.Model):
         if not self.inventory_id:
             DB.session.add(self)
         else:
-            Inventory.logger.info('Inventory with inventory_id: %s is exist', self.inventory_id)
+            Inventory.logger.info('Inventory with inventory_id: %s is exist', \
+                                  self.inventory_id)
         DB.session.commit()
-        Inventory.logger.info('Inventory with inventory_id: %s saved', self.inventory_id)
+        Inventory.logger.info('Inventory with inventory_id: %s saved',
+                              self.inventory_id)
 
     def serialize(self):
         """ Serializes an Inventory into a dictionary """
@@ -88,15 +90,15 @@ class Inventory(DB.Model):
             self.restock_level = data['restock_level']
             self.condition = data['condition']
             self.available = data['available']
-            if not isinstance(self.product_id, int):
+            if type(self.product_id) is not int:
                 raise TypeError('product_id required int')
-            if not isinstance(self.quantity, int):
+            if type(self.quantity) is not int:
                 raise TypeError('quantity required int')
-            if not isinstance(self.restock_level, int):
+            if type(self.restock_level) is not int:
                 raise TypeError('restock_level required int')
             if not isinstance(self.condition, str):
                 raise TypeError('condition required string')
-            if not isinstance(self.available, bool):
+            if type(self.available) is not bool:
                 raise TypeError('available required bool')
         except KeyError as error:
             raise DataValidationError('Invalid Inventory: missing '

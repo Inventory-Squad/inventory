@@ -27,8 +27,8 @@ import logging
 from unittest.mock import patch
 from flask_api import status    # HTTP Status Codes
 from service.models import DB, Inventory, DataValidationError
-from service.service import app, init_db, initialize_logging
-from service.service import internal_server_error
+from service.service import app, init_db, initialize_logging, \
+internal_server_error
 from tests.inventory_factory import InventoryFactory
 
 DATABASE_URI = os.getenv('DATABASE_URI',
@@ -358,7 +358,7 @@ class TestInventoryServer(unittest.TestCase):
     #####  Mock data #####
     @patch('service.models.Inventory.find_by_condition')
     def test_bad_request(self, bad_request_mock):
-        """ Test a Bad Request error from find_by_condition """
+        """ Test a bad request error from find_by_condition """
         bad_request_mock.side_effect = DataValidationError()
         resp = self.app.get('/inventory', query_string='condition=wrong')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
@@ -368,11 +368,11 @@ class TestInventoryServer(unittest.TestCase):
         """ Test a request with internal_server_error """
         request_mock.side_effect = internal_server_error("")
         resp = self.app.get('/inventory', query_string='condition=wrong')
-        self.assertEqual(resp.status_code,
+        self.assertEqual(resp.status_code, \
                          status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def test_invalid_method_request(self):
-        """ Test a Invalid Request error """
+        """ Test an invalid request error """
         resp = self.app.delete('/inventory', content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
