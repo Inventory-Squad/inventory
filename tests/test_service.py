@@ -206,7 +206,12 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_query_by_condition(self):
         """ Query an Inventory by Condition """
-        inventories = self._create_inventories(5)
+        inventories = []
+        for _ in range(0, 2):
+            test = Inventory(product_id=_, quantity=_, restock_level=20, condition='new')
+            test.save()
+            inventories.append(test)
+        # inventories = self._create_inventories(5)
         test_condition = inventories[0].condition
         test_pid = inventories[0].product_id
         condition_inventories = [
