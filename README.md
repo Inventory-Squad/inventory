@@ -89,6 +89,10 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 - PATH: DELETE `/inventory/{inventory-id} `
 
+##### Disable an inventory
+
+- PATH: PUT `/inventory/disable/{product_id}`
+
 ##### Update an inventory
 
-- PATH: PUT `/inventory/disable/<product_id>' `
+- PATH: PUT `/inventory/{inventory-id}`
