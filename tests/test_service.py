@@ -81,7 +81,6 @@ class TestInventoryServer(unittest.TestCase):
     def test_disable_inventory(self):
         """ Disable an existing Inventory """
         # create inventories to update
-        new_inventory = []
         test_inventory = []
         for _ in range(0, 2):
             test = Inventory(product_id=1, quantity=100, restock_level=20,
@@ -90,13 +89,21 @@ class TestInventoryServer(unittest.TestCase):
             test_inventory.append(test)
 
         # disable the inventory
-        resp = self.app.put('/inventory/disable/1',
+        product_id = 1
+        resp = self.app.put('/inventory/disable/{}'.format(product_id),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         disabled_data = resp.get_json()
         self.assertEqual(len(disabled_data), 2)
         for row in resp.get_json():
             self.assertEqual(row['available'], False)
+
+        # test disabling an inventory with wrong product_id
+        wrong_product_id = 2
+        resp = self.app.put('/inventory/disable/{}'.format(wrong_product_id),
+                            content_type='application/json')
+        disabled_data = resp.get_json()
+        self.assertEqual(len(disabled_data), 0)
 
     def test_create_inventory(self):
         """ Create a new Inventory """
