@@ -168,12 +168,12 @@ def disable_inventory(product_id):
 
     if not inventory:
         raise NotFound("Inventory with id '{}' was not found."
-                      .format(product_id))
+                       .format(product_id))
     for elem in inventory:
         elem.available = False
         elem.save()
     return make_response(jsonify([elem.serialize() for elem in inventory]),
-                        status.HTTP_200_OK)
+                         status.HTTP_200_OK)
 
 ######################################################################
 # DELETE AN INVENTORY
