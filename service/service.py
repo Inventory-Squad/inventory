@@ -112,8 +112,8 @@ def index():
 def create_inventory():
     """
     Creates an Inventory
-    This endpoint will create an Inventory based the data in the body
-    that is posted
+    This endpoint will create a nInventory based
+    the data in the body that is posted
     """
     app.logger.info('Request to create an inventory')
     check_content_type('application/json')
@@ -121,7 +121,8 @@ def create_inventory():
     inventory.deserialize(request.get_json())
     inventory.save()
     message = inventory.serialize()
-    # location_url = url_for('get_inventory', inventory_id=inventory.inventory_id, _external=True)
+    # location_url = url_for('get_inventory',
+    #               inventory_id=inventory.inventory_id, _external=True)
     return make_response(jsonify(message), status.HTTP_201_CREATED,
                          {
                              'Location': 'location_url'
