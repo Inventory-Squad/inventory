@@ -34,7 +34,7 @@ import sys
 import logging
 from flask import jsonify, request, url_for, make_response, abort
 from flask_api import status    # HTTP Status Codes
-
+from werkzeug.exceptions import NotFound
 from service.models import Inventory, DataValidationError
 
 # Import Flask application
@@ -112,7 +112,8 @@ def index():
 def create_inventory():
     """
     Creates an Inventory
-    This endpoint will create a nInventory based the data in the body that is posted
+    This endpoint will create an Inventory based the data in the body
+    that is posted
     """
     app.logger.info('Request to create an inventory')
     check_content_type('application/json')
