@@ -93,7 +93,6 @@ def internal_server_error(error):
                    error='Internal Server Error',
                    message=message), status.HTTP_500_INTERNAL_SERVER_ERROR
 
-
 ######################################################################
 # GET INDEX
 ######################################################################
