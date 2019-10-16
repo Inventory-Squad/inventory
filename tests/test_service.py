@@ -196,8 +196,8 @@ class TestInventoryServer(unittest.TestCase):
         inventories = []
         inventories = self._create_inventories(5)
         test_product_id = inventories[0].product_id
-        product_id = [i for i in inventories if (
-           i.product_id == test_product_id)]
+        product_id = [
+            i for i in inventories if i.product_id == test_product_id]
         resp = self.app.get('/inventory',
                             query_string='product-id={}'
                             .format(test_product_id))
