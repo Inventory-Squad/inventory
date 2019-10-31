@@ -10,12 +10,8 @@ addons:
 
 env:
   global:
-  - DATABASE_URI='mysql+pymysql://root@localhost:3306/mysql'
+  - DATABASE_URI='mysql+pymysql://root:@localhost:3306/mysql'
   
-
-before_script:
-  - sudo mysql -e 'create database testdb;'
-
 script:
   - nosetests
 
