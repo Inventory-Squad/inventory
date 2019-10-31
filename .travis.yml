@@ -5,10 +5,13 @@ python:
 # command to install dependencies
 install: "pip install -r requirements.txt"
 
-services:
-  - mysql
 addons:
   mariadb: '10.4'
+
+env:
+  global:
+  - DATABASE_URI='mysql+pymysql://root@localhost:3306/mysql'
+  
 
 before_script:
   - sudo mysql -e 'create database testdb;'
