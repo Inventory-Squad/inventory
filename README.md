@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/Inventory-Squad/inventory.svg?branch=master)](https://travis-ci.org/Inventory-Squad/inventory)
 # inventory
 The inventory resource keeps track of how many of each product we have in our warehouse
 
