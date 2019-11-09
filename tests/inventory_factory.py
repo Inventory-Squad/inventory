@@ -24,7 +24,6 @@ class InventoryFactory(factory.Factory):
     class Meta:
         """ Assign Inventory to model """
         model = Inventory
-    inventory_id = factory.Sequence(lambda n: n)
     product_id = FuzzyInteger(1, 5)
     quantity = FuzzyInteger(0, 100)
     restock_level = FuzzyInteger(5, 20)
@@ -34,4 +33,3 @@ class InventoryFactory(factory.Factory):
 if __name__ == '__main__':
     for _ in range(10):
         inventory = InventoryFactory()
-        print(inventory.serialize())

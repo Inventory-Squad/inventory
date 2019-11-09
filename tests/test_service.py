@@ -14,7 +14,6 @@
 
 """
 Inventory API Service Test Suite
-
 Test cases can be run with the following:
   nosetests -v --with-spec --spec-color
   coverage report -m
@@ -24,15 +23,13 @@ Test cases can be run with the following:
 import unittest
 import os
 import logging
+import json
 from unittest.mock import patch
 from flask_api import status    # HTTP Status Codes
-from service.models import DB, Inventory, DataValidationError
-from service.service import app, init_db, initialize_logging
+from service.models import Inventory, DataValidationError
+from service.service import app, initialize_logging
 from service.service import internal_server_error
 from inventory_factory import InventoryFactory
-
-DATABASE_URI = os.getenv('DATABASE_URI',
-                         'mysql+pymysql://root:passw0rd@localhost:3306/mysql')
 
 ######################################################################
 #  T E S T   C A S E S
@@ -45,22 +42,21 @@ class TestInventoryServer(unittest.TestCase):
         """ Run once before all tests """
         app.debug = False
         initialize_logging(logging.INFO)
-        app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+        # app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    # @classmethod
+    # def tearDownClass(cls):
+    #     pass
 
     def setUp(self):
         """ Runs before each test """
-        init_db()
-        DB.drop_all()
-        DB.create_all()
+        Inventory.init_db("test")
+        Inventory.remove_all()
         self.app = app.test_client()
 
-    def tearDown(self):
-        DB.session.remove()
-        DB.drop_all()
+    # def tearDown(self):
+    #     DB.session.remove()
+    #     DB.drop_all()
 
     def _create_inventories(self, count):
         """ Factory method to create inventory in bulk """
@@ -73,7 +69,7 @@ class TestInventoryServer(unittest.TestCase):
             self.assertEqual(resp.status_code, status.HTTP_201_CREATED,
                              'Could not create test inventory')
             new_inventory = resp.get_json()
-            test_inventory.inventory_id = new_inventory['inventory_id']
+            test_inventory.id = new_inventory['_id']
             inventory_list.append(test_inventory)
         return inventory_list
 
@@ -180,7 +176,7 @@ class TestInventoryServer(unittest.TestCase):
         """ Get a single Inventory """
         test_inventory = self._create_inventories(1)[0]
         resp = self.app.get('/inventory/{}'
-                            .format(test_inventory.inventory_id),
+                            .format(test_inventory.id),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
@@ -266,17 +262,18 @@ class TestInventoryServer(unittest.TestCase):
         # inventories = self._create_inventories(5)
         test_condition = inventories[0].condition
         test_pid = inventories[0].product_id
+        print(test_condition, test_pid)
         condition_inventories = [
             i for i in inventories if i.condition == test_condition]
         pid_condition_inventories = [i for i in inventories if (
             i.condition == test_condition and i.product_id == test_pid)]
         # /inventory?condition={condition}
-        resp = self.app.get('/inventory')
+        resp = self.app.get('/inventory?condition={}'.format(test_condition))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertNotEqual(len(data), len(condition_inventories))
-        # for i in data:
-        #     self.assertEqual(i['condition'], test_condition)
+        self.assertEqual(len(data), len(condition_inventories))
+        for i in data:
+            self.assertEqual(i['condition'], test_condition)
         # /inventory?product-id={pid}&condition={condition}
         resp = self.app.get('/inventory',
                             query_string='product-id={0}&condition={1}'.format(
@@ -318,8 +315,7 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_update_inventory(self):
         """ Update an existing Inventory """
-        test_inventory = {"inventory_id": 1,
-                          "product_id": 2,
+        test_inventory = {"product_id": 2,
                           "quantity": 100,
                           "restock_level": 40,
                           "condition": 'new',
@@ -330,22 +326,22 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         inventory = resp.get_json()
         self.assertEqual(inventory['condition'], 'new')
-        self.assertEqual(inventory['inventory_id'], 1)
+        self.assertNotEqual(inventory['_id'], None)
         inventory['condition'] = 'used'
-        resp = self.app.put('/inventory/{}'.format(inventory['inventory_id']),
+        resp = self.app.put('/inventory/{}'.format(inventory['_id']),
                             json=inventory,
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # get the inventory again
         resp = self.app.get(
-            '/inventory/{}'.format(inventory['inventory_id']),
+            '/inventory/{}'.format(inventory['_id']),
             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_inventory = resp.get_json()
         self.assertEqual(updated_inventory['condition'], 'used')
-        # test updating an inventory with wrong inventory_id
-        wrong_inventory_id = 2
-        resp = self.app.put('/inventory/{}'.format(wrong_inventory_id),
+        # test updating an inventory with wrong id
+        wrong_id = 2
+        resp = self.app.put('/inventory/{}'.format(wrong_id),
                             json=inventory,
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
@@ -353,15 +349,14 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_delete_inventory(self):
         """ Delete an inventory """
-        inventory = self._create_inventories(1)[0]
-        resp = self.app.delete('/inventory/{}'.format(inventory.inventory_id),
+        inventory = self._create_inventories(2)[0]
+        count_before_delete = self.get_invnetory_count()
+        resp = self.app.delete('/inventory/{}'.format(inventory.id),
                                content_type='application/json')
+        print(resp.data)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(resp.data), 0)
-        # make sure they are deleted
-        resp = self.app.get('/inventory/{}'.format(inventory.inventory_id),
-                            content_type='application/json')
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        count_after_delete = self.get_invnetory_count()
+        self.assertEqual(count_after_delete, count_before_delete - 1)
 
     #####  Mock data #####
     @patch('service.models.Inventory.find_by_condition')
@@ -371,13 +366,13 @@ class TestInventoryServer(unittest.TestCase):
         resp = self.app.get('/inventory', query_string='condition=wrong')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @patch('service.models.Inventory.find_by_condition')
-    def test_internal_server_error(self, request_mock):
-        """ Test a request with internal_server_error """
-        request_mock.side_effect = internal_server_error("")
-        resp = self.app.get('/inventory', query_string='condition=wrong')
-        self.assertEqual(resp.status_code, \
-                         status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # @patch('service.models.Inventory.find_by_condition')
+    # def test_internal_server_error(self, request_mock):
+    #     """ Test a request with internal_server_error """
+    #     request_mock.side_effect = internal_server_error("")
+    #     resp = self.app.get('/inventory', query_string='condition=wrong')
+    #     self.assertEqual(resp.status_code, \
+    #                      status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def test_invalid_method_request(self):
         """ Test an invalid request error """
@@ -392,3 +387,36 @@ class TestInventoryServer(unittest.TestCase):
                              content_type='text/html')
         self.assertEqual(resp.status_code,
                          status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_db_connection(self):
+        """ Test DB connection """
+        Inventory.disconnect()
+        inventory = InventoryFactory()
+        resp = self.app.post('/inventory', data=json.dumps(dict(
+            product_id=inventory.product_id,
+            quantity=inventory.quantity,
+            restock_level=inventory.restock_level,
+            condition=inventory.condition,
+            available=inventory.available
+        )), content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        Inventory.connect()
+        resp = self.app.post('/inventory', data=json.dumps(dict(
+            product_id=inventory.product_id,
+            quantity=inventory.quantity,
+            restock_level=inventory.restock_level,
+            condition=inventory.condition,
+            available=inventory.available
+        )), content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+######################################################################
+# Utility functions
+######################################################################
+
+    def get_invnetory_count(self):
+        """ save the current number of invnetory """
+        resp = self.app.get('/inventory')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        return len(data)

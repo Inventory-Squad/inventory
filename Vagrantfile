@@ -11,10 +11,9 @@ Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/bionic64"
   config.vm.hostname = "ibmcloud"
 
-  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # Forward Flask and Kubernetes ports
   config.vm.network "forwarded_port", guest: 8001, host: 8001
   config.vm.network "forwarded_port", guest: 5000, host: 5000, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 3306, host: 3306, auto_correct: true
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -62,8 +61,6 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     # Prepare MySQL data share
-    sudo mkdir -p /var/lib/mysql
-    sudo chown vagrant:vagrant /var/lib/mysql
     apt-get update
     apt-get install -y git python3 python3-pip python3-venv
     apt-get -y autoremove
@@ -75,18 +72,8 @@ Vagrant.configure(2) do |config|
   SHELL
 
   ######################################################################
-  # Add MySQL docker container
-  ######################################################################
-  config.vm.provision "docker" do |d|
-    d.pull_images "mariadb"
-    d.run "mariadb",
-      args: "--restart=always -d --name mariadb -p 3306:3306 -v /var/lib/mysql:/var/lib/mysql  -e MYSQL_ROOT_PASSWORD=passw0rd"
-  end
-
-  ######################################################################
   # Add CouchDB docker container
   ######################################################################
-  # docker run -d --name couchdb -p 5984:5984 -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=pass couchdb
   config.vm.provision "docker" do |d|
     d.pull_images "couchdb"
     d.run "couchdb",
