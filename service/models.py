@@ -74,10 +74,8 @@ class Inventory():
         except HTTPError as err:
             Inventory.logger.warning('Create failed: %s', err)
             return
-
         if document.exists():
             self.id = document['_id']
-            print("create" + self.id)
 
     def update(self):
         """ Updates an Inventory in the database """
@@ -199,7 +197,6 @@ class Inventory():
                         inventory_id)
         try:
             document = cls.database[inventory_id]
-            print(document)
             return Inventory().deserialize(document)
         except KeyError:
             return None

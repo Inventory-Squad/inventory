@@ -54,7 +54,7 @@ If the VM is no longer needed you can remove it with:
 
 | Fields        | Type                                 |
 | :------------ | :----------------------------------- |
-| inventory_id  | Integer, read only                   |
+| id  | Integer, read only                   |
 | product_id    | Integer                              |
 | quantity      | Integer                              |
 | restock_level | Integer, when to order more          |
@@ -73,7 +73,7 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 ##### Get an inventory by an inventory id
 
-- PATH: GET `/inventory/{int:inventory-id} `
+- PATH: GET `/inventory/{string:id} `
 
 ##### List all inventory 
 
@@ -90,7 +90,7 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 ##### Delete an inventory
 
-- PATH: DELETE `/inventory/{int:inventory-id} `
+- PATH: DELETE `/inventory/{string:id} `
 
 ##### Disable an inventory
 
@@ -98,4 +98,4 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 ##### Update an inventory
 
-- PATH: PUT `/inventory/{int:inventory-id}`
+- PATH: PUT `/inventory/{string:id}`
