@@ -31,6 +31,7 @@ available (boolean)
 import os
 import json
 import logging
+from retry import retry
 from cloudant.client import Cloudant
 from cloudant.query import Query
 from requests import HTTPError
@@ -40,6 +41,11 @@ ADMIN_PARTY = os.environ.get('ADMIN_PARTY', 'False').lower() == 'true'
 CLOUDANT_HOST = os.environ.get('CLOUDANT_HOST', 'localhost')
 CLOUDANT_USERNAME = os.environ.get('CLOUDANT_USERNAME', 'admin')
 CLOUDANT_PASSWORD = os.environ.get('CLOUDANT_PASSWORD', 'pass')
+
+# global variables for retry (must be int)
+RETRY_COUNT = int(os.environ.get('RETRY_COUNT', 10))
+RETRY_DELAY = int(os.environ.get('RETRY_DELAY', 1))
+RETRY_BACKOFF = int(os.environ.get('RETRY_BACKOFF', 2))
 
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
@@ -64,6 +70,8 @@ class Inventory():
         self.condition = condition
         self.available = available
 
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def create(self):
         """
         Creates a new Inventory in the database
@@ -77,6 +85,8 @@ class Inventory():
         if document.exists():
             self.id = document['_id']
 
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def update(self):
         """ Updates an Inventory in the database """
         if self.id:
@@ -89,6 +99,8 @@ class Inventory():
                 document.update(self.serialize())
                 document.save()
 
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def save(self):
         """
         Saves an Inventory to DB
@@ -147,6 +159,8 @@ class Inventory():
 
         return self
 
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def delete(self):
         """ Deletes an Inventory from the database """
         if self.id:
@@ -202,6 +216,8 @@ class Inventory():
             return None
 
     @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by(cls, **kwargs):
         """ Find records using selector """
         query = Query(cls.database, selector=kwargs)
@@ -214,36 +230,41 @@ class Inventory():
 
 
     @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by_product_id(cls, product_id):
         """ Find an Inventory by product_id
             Args:
             product_id (int): the product_id of the Inventory you
             want to match
         """
-        # return cls.query.filter(cls.product_id == product_id)
         return cls.find_by(product_id=product_id)
 
     @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by_availability(cls, available):
         """ Find an Inventory by availability
         Args:
             available (boolean): the availability of the Inventory you
             want to match
         """
-        # return cls.query.filter(cls.available == available)
         return cls.find_by(available=available)
 
     @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by_condition(cls, condition):
         """ Find an Inventory by condition
         Args:
             condition (string): the condition of the Inventory you
             want to match
         """
-        # return cls.query.filter(cls.condition == condition)
         return cls.find_by(condition=condition)
 
     @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by_condition_with_pid(cls, condition, pid):
         """ Find an Inventory by condition and product_id
         Args:
@@ -252,11 +273,11 @@ class Inventory():
             product_id (int): the product_id of the Inventory you
             want to match
         """
-        # return cls.query.filter(
-        #     and_(cls.condition == condition, cls.product_id == pid))
         return cls.find_by(condition=condition, product_id=pid)
 
     @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by_restock(cls, restock):
         """ Returns all of the Inventory that quantity lower than their\
             restock level
@@ -277,6 +298,8 @@ class Inventory():
         return results
 
     @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by_restock_level(cls, restock_level):
         """ Returns all of the Inventory that restock level = {restock_level}
         Args:
