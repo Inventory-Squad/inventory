@@ -34,6 +34,7 @@ import logging
 from retry import retry
 from cloudant.client import Cloudant
 from cloudant.query import Query
+from cloudant.adapters import Replay429Adapter
 from requests import HTTPError
 
 # get configruation from enviuronment (12-factor)
@@ -175,7 +176,7 @@ class Inventory():
 #  S T A T I C   D A T A B S E   M E T H O D S
 ######################################################################
     @classmethod
-    def connect(cls):
+    def connect(cls,adapter=Replay429Adapter(retries=10, initialBackoff=0.01)):
         """ Connect to the server """
         cls.client.connect()
 
