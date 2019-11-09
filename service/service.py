@@ -13,10 +13,8 @@
 # permissions and limitations under the License.
 
 """
-
 Paths (#issue_number):
 ------
-
 GET /inventory #3
 GET /inventory/{inventory-id} #31
 GET /inventory?product-id={pid} #4
@@ -27,7 +25,6 @@ POST /inventory #6
 PUT /inventory/{inventory-id} #7
 DELETE /inventory/{inventory-id} #8
 PUT /inventory/{product-id}/disable to disable the product #25
-
 """
 
 import sys
@@ -105,7 +102,7 @@ def index():
                   ), status.HTTP_200_OK
 
 ######################################################################
-# ADD an Inventory
+# ADD AN INVENTORY
 ######################################################################
 @app.route('/inventory', methods=['POST'])
 def create_inventory():
@@ -119,27 +116,29 @@ def create_inventory():
     inventory = Inventory()
     inventory.deserialize(request.get_json())
     inventory.save()
-    message = inventory.serialize()
     location_url = url_for('get_inventory',
-                           inventory_id=inventory.inventory_id, _external=True)
+                           id=inventory.id, _external=True)
+    message = inventory.serialize()
     return make_response(jsonify(message), status.HTTP_201_CREATED,
                          {
                              'Location': location_url
                          })
 ######################################################################
-# RETRIEVE An Inventory
+# RETRIEVE an Inventory
 ######################################################################
-@app.route('/inventory/<int:inventory_id>', methods=['GET'])
-def get_inventory(inventory_id):
+@app.route('/inventory/<string:id>', methods=['GET'])
+def get_inventory(id):
     """
     Retrieve a single Inventory
     This endpoint will return an Inventory based on it's id
     """
-    app.logger.info('Request for inventory with id: %s', inventory_id)
-    inventory = Inventory.find(inventory_id)
+    app.logger.info('Request for inventory with id: %s', id)
+    print("fuck")
+    inventory = Inventory.find(id)
+    print("fuck me")
     if not inventory:
-        raise NotFound("Inventory with inventory_id '{}' was not found."
-                       .format(inventory_id))
+        raise NotFound("Inventory with id '{}' was not found."
+                       .format(id))
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 ######################################################################
@@ -168,15 +167,14 @@ def list_inventory():
         elif restock == "false":
             inventories = Inventory.find_by_restock(False)
     elif restock_level:
-        inventories = Inventory.find_by_restock_level(restock_level)
+        inventories = Inventory.find_by_restock_level(int(restock_level))
     elif condition:
         if product_id:
-            inventories = Inventory.find_by_condition_with_pid(condition,
-                                                               product_id)
+            inventories = Inventory.find_by_condition_with_pid(condition, int(product_id))
         elif not product_id:
             inventories = Inventory.find_by_condition(condition)
     elif product_id:
-        inventories = Inventory.find_by_product_id(product_id)
+        inventories = Inventory.find_by_product_id(int(product_id))
     elif available:
         if available == 'true':
             inventories = Inventory.find_by_availability(True)
@@ -212,15 +210,15 @@ def disable_inventory(product_id):
 ######################################################################
 # DELETE AN INVENTORY
 ######################################################################
-@app.route('/inventory/<int:inventory_id>', methods=['DELETE'])
-def delete_inventory(inventory_id):
+@app.route('/inventory/<string:id>', methods=['DELETE'])
+def delete_inventory(id):
     """
     Delete an inventory
     This endpoint will delete an inventory based on the id specified
     in the path
     """
-    app.logger.info('Request to delete inventory with id: %s', inventory_id)
-    inventory = Inventory.find(inventory_id)
+    app.logger.info('Request to delete inventory with id: %s', id)
+    inventory = Inventory.find(id)
     if inventory:
         inventory.delete()
     return make_response('', status.HTTP_204_NO_CONTENT)
@@ -228,32 +226,26 @@ def delete_inventory(inventory_id):
 ######################################################################
 # UPDATE AN EXISTING INVENTORY
 ######################################################################
-@app.route('/inventory/<int:inventory_id>', methods=['PUT'])
-def update_inventory(inventory_id):
+@app.route('/inventory/<string:id>', methods=['PUT'])
+def update_inventory(id):
     """
     Update an Inventory
     This endpoint will update an Inventory based the body that is posted
     """
-    app.logger.info('Request to update inventory with id: %s', inventory_id)
+    app.logger.info('Request to update inventory with id: %s', id)
     check_content_type('application/json')
-    inventory = Inventory.find(inventory_id)
+    inventory = Inventory.find(id)
     if not inventory:
         raise NotFound(
-            "Inventory with id '{}' was not found.".format(inventory_id))
+            "Inventory with id '{}' was not found.".format(id))
     inventory.deserialize(request.get_json())
-    inventory.id = inventory_id
+    inventory.id = id
     inventory.save()
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-
-def init_db():
-    """ Initialies the SQLAlchemy app """
-    global app
-    Inventory.init_db(app)
-
 def check_content_type(content_type):
     """ Checks that the media type is correct """
     if request.headers['Content-Type'] == content_type:
