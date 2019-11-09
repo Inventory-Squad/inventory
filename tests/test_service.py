@@ -262,7 +262,6 @@ class TestInventoryServer(unittest.TestCase):
         # inventories = self._create_inventories(5)
         test_condition = inventories[0].condition
         test_pid = inventories[0].product_id
-        print(test_condition, test_pid)
         condition_inventories = [
             i for i in inventories if i.condition == test_condition]
         pid_condition_inventories = [i for i in inventories if (
@@ -353,7 +352,6 @@ class TestInventoryServer(unittest.TestCase):
         count_before_delete = self.get_invnetory_count()
         resp = self.app.delete('/inventory/{}'.format(inventory.id),
                                content_type='application/json')
-        print(resp.data)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         count_after_delete = self.get_invnetory_count()
         self.assertEqual(count_after_delete, count_before_delete - 1)

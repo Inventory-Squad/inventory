@@ -96,6 +96,28 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(inventory[0].condition, 'used')
         self.assertEqual(inventory[0].available, False)
 
+    def test_update_nonexist(self):
+        """ Test updating a nonexist inventory"""
+        inventory = Inventory(product_id=1, quantity=100,
+                              restock_level=50, condition="new",
+                              available=True)
+        inventory.id = '1cak41-nonexist'
+        try:
+            inventory.update()
+        except KeyError:
+            self.assertRaises(KeyError)
+
+    def test_delete_nonexist(self):
+        """ Test deleting a nonexist inventory"""
+        inventory = Inventory(product_id=1, quantity=100,
+                              restock_level=50, condition="new",
+                              available=True)
+        inventory.id = '1cak41-nonexist'
+        try:
+            inventory.delete()
+        except KeyError:
+            self.assertRaises(KeyError)
+
     def test_disable_an_inventory(self):
         """ Disable an existing product """
         inventory = Inventory(product_id=1, quantity=100,

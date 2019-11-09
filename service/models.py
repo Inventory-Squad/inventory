@@ -82,10 +82,8 @@ class Inventory():
         except HTTPError as err:
             Inventory.logger.warning('Create failed: %s', err)
             return
-
         if document.exists():
             self.id = document['_id']
-            print("create" + self.id)
 
     @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
            tries=RETRY_COUNT, logger=logger)
@@ -213,7 +211,6 @@ class Inventory():
                         inventory_id)
         try:
             document = cls.database[inventory_id]
-            print(document)
             return Inventory().deserialize(document)
         except KeyError:
             return None

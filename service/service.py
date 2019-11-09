@@ -133,9 +133,7 @@ def get_inventory(id):
     This endpoint will return an Inventory based on it's id
     """
     app.logger.info('Request for inventory with id: %s', id)
-    print("fuck")
     inventory = Inventory.find(id)
-    print("fuck me")
     if not inventory:
         raise NotFound("Inventory with id '{}' was not found."
                        .format(id))
@@ -257,7 +255,6 @@ def check_content_type(content_type):
 def initialize_logging(log_level=logging.INFO):
     """ Initialized the default logging to STDOUT """
     if not app.debug:
-        print('Setting up logging...')
         # Set up default logging for submodules to use STDOUT
         # datefmt='%m/%d/%Y %I:%M:%S %p'
         fmt = '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
