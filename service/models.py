@@ -363,7 +363,8 @@ class Inventory():
                 url=opts['url'],
                 connect=True,
                 auto_renew=True,
-                admin_party=ADMIN_PARTY
+                admin_party=ADMIN_PARTY,
+                adapter=Replay429Adapter(retries=10, initialBackoff=0.1)
             )
         except ConnectionError:
             raise ConnectionError('Cloudant service \
