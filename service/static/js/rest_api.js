@@ -113,6 +113,81 @@ $(function () {
 
     });
 
+    // **********************************************
+    // Disable a Product
+    // **********************************************
+
+    $("#disable-btn").click(function () {
+
+        var inventory_id = $("#product_id").val();
+
+        var ajax = $.ajax({
+                type: "PUT",
+                url: "/inventory/" + inventory_id + "/disable",
+                contentType: "application/json",
+                data:''
+            })
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // **********************************************
+    // List all Inventory that need to be restocked
+    // **********************************************
+
+    $("#restock-list-btn").click(function () {
+
+        var ajax = $.ajax({
+                type: "GET",
+                url: "/inventory?restock=true",
+                contentType: "application/json",
+                data: ''
+            })
+    
+            ajax.done(function(res){
+                //alert(res.toSource())
+                $("#search_results").empty();
+                var table = '<table class="table-striped"><tr><thead>'
+                table += '<th class="col-md-2">ID</th>'
+                table += '<th class="col-md-2">Product Id</th>'
+                table += '<th class="col-md-2">Quantity</th>'
+                table += '<th class="col-md-2">Restock Level</th>'
+                table += '<th class="col-md-2">Condition</th>'
+                table += '<th class="col-md-2">Availability</th></tr>'
+                table += '</thead><tbody>'
+                var firstInventory = "";
+                for(var i = 0; i < res.length; i++) {
+                    var inventory = res[i];
+                    table += "<tr ><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td><td>"+inventory.condition+"</td><td>"+inventory.available+"</td></tr>";
+                    if (i == 0) {
+                        firstInventory = inventory;
+                    }
+                }
+                table += '<tbody></table>'
+                $("#search_results").append(table);
+    
+                // copy the first result to the form
+                if (firstInventory != "") {
+                    update_form_data(firstInventory)
+                }
+    
+                flash_message("Success")
+            });
+    
+            ajax.fail(function(res){
+                flash_message(res.responseJSON.message)
+            });
+
+    });
+
     // ****************************************
     // Retrieve an Inventory
     // ****************************************
@@ -174,6 +249,7 @@ $(function () {
         $("#inventory_id").val("");
         clear_form_data()
     });
+    
 
     // ****************************************
     // Search for an Inventory
