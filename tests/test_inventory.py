@@ -35,7 +35,7 @@ class TestInventory(unittest.TestCase):
     def setUpClass(cls):
         """ These run once per Test suite """
         app.debug = False
- 
+
     def setUp(self):
         """ Runs before each test """
         Inventory.init_db("test")
@@ -160,9 +160,6 @@ class TestInventory(unittest.TestCase):
                   condition="new", available=True).save()
         inventory = Inventory.find_by_restock(True)
         self.assertEqual(len(inventory), 3)
-        self.assertEqual(inventory[0].product_id, 2)
-        self.assertEqual(inventory[1].product_id, 3)
-        self.assertEqual(inventory[2].product_id, 5)
         inventory = Inventory.find_by_restock(False)
         self.assertEqual(len(inventory), 2)
 
@@ -359,11 +356,6 @@ class TestInventory(unittest.TestCase):
                   restock_level=20, condition="used", available=True).save()
         inventory = Inventory.find_by_condition("new")
         self.assertEqual(len(inventory), 2)
-        self.assertEqual(inventory[0].product_id, 1)
-        self.assertEqual(inventory[0].quantity, 100)
-        self.assertEqual(inventory[0].restock_level, 50)
-        self.assertEqual(inventory[0].condition, 'new')
-        self.assertEqual(inventory[0].available, True)
         inventory = Inventory.find_by_condition_with_pid('new', 1)
         self.assertEqual(len(inventory), 1)
         self.assertEqual(inventory[0].product_id, 1)
