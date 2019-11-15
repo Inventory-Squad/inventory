@@ -61,7 +61,7 @@
                 <label class="control-label col-sm-2" for="condition">Condition:</label>
                 <div class="col-sm-10">
                   <select class="form-control" id="condition">
-                        <option value="" disabled selected>Select the condition for the inventory</option>
+                        <option value="" selected>Select the condition for the inventory</option>
                         <option value="new">New</option>
                         <option value="open_box">Open Box</option>
                         <option value="used">Used</option>
@@ -72,7 +72,7 @@
                 <label class="control-label col-sm-2" for="available">Availability:</label>
                 <div class="col-sm-10">
                   <select class="form-control" id="available">
-                        <option value="" disabled selected>Select the availability for the inventory</option>
+                        <option value="" selected>Select the availability for the inventory</option>
                         <option value=true>True</option>
                         <option value=false>False</option>
                   </select>
@@ -90,13 +90,13 @@
         </div>
 
         <!-- Search Results -->
-        <div class="table-responsive col-md-12" id="search_results">
+        <div class="table-responsive col-md-12 text-center" id="search_results">
           <table class="table-striped">
             <thead>
             <tr>
-                <th class="col-md-4">ID</th>
+                <th class="col-md-3">ID</th>
                 <th class="col-md-2">Product Id</th>
-                <th class="col-md-2">Quantity</th>
+                <th class="col-md-1">Quantity</th>
                 <th class="col-md-2">Restock Level</th>
                 <th class="col-md-2">Condition</th>
                 <th class="col-md-2">Availability</th>
