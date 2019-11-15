@@ -21,7 +21,7 @@ The inventory resource keeps track of how many
 of each product we have in our warehouse
 Attributes:
 -----------
-id (int) readonly
+id (string) readonly
 product_id (int)
 quantity (int)
 restock_level (int) (when to order more )
