@@ -191,9 +191,9 @@ $(function () {
 
         if (product_id) {
             if (queryString.length > 0) {
-                queryString += '&product_id=' + product_id
+                queryString += '&product—id=' + product_id
             } else {
-                queryString += 'product_id=' + product_id
+                queryString += 'product—id=' + product_id
             }
         }
         if (quantity) {
@@ -205,9 +205,9 @@ $(function () {
         }
         if (restock_level) {
             if (queryString.length > 0) {
-                queryString += '&restock_level=' + restock_level
+                queryString += '&restock—level=' + restock_level
             } else {
-                queryString += 'restock_level=' + restock_level
+                queryString += 'restock—level=' + restock_level
             }
         }
         if (condition) {
@@ -235,26 +235,24 @@ $(function () {
         ajax.done(function(res){
             //alert(res.toSource())
             $("#search_results").empty();
-            $("#search_results").append('<table class="table-striped" cellpadding="10">');
-            var header = '<tr>'
-            header += '<th style="width:20%">ID</th>'
-            header += '<th style="width:10%">Product Id</th>'
-            header += '<th style="width:10%">Quantity</th>'
-            header += '<th style="width:10%">Restock Level</th>'
-            header += '<th style="width:10%">Condition</th></tr>'
-            header += '<th style="width:10%">Available </th></tr>'
-            $("#search_results").append(header);
+            var table = '<table class="table-striped"><tr><thead>'
+            table += '<th class="col-md-2">ID</th>'
+            table += '<th class="col-md-2">Product Id</th>'
+            table += '<th class="col-md-2">Quantity</th>'
+            table += '<th class="col-md-2">Restock Level</th>'
+            table += '<th class="col-md-2">Condition</th>'
+            table += '<th class="col-md-2">Availability</th></tr>'
+            table += '</thead><tbody>'
             var firstInventory = "";
             for(var i = 0; i < res.length; i++) {
                 var inventory = res[i];
-                var row = "<tr><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td></tr>"+inventory.condition+"</td></tr>"+inventory.available+"</td></tr>";
-                $("#search_results").append(row);
+                table += "<tr ><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td><td>"+inventory.condition+"</td><td>"+inventory.available+"</td></tr>";
                 if (i == 0) {
                     firstInventory = inventory;
                 }
             }
-
-            $("#search_results").append('</table>');
+            table += '<tbody></table>'
+            $("#search_results").append(table);
 
             // copy the first result to the form
             if (firstInventory != "") {
