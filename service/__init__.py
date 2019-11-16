@@ -38,8 +38,8 @@ from .models import Inventory
 service.initialize_logging()
 
 app.logger.info(70 * '*')
-app.logger.info('  P R O M O T I O N   S E R V I C E   \
-                R U N N I N G  '.center(70, '*'))
+app.logger.info(' I N V E N T O R Y  \
+                S E R V I C E  R U N N I N G '.center(70, '*'))
 app.logger.info(70 * '*')
 
 @app.before_first_request
