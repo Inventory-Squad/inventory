@@ -77,7 +77,6 @@ class Inventory():
         """
         Creates a new Inventory in the database
         """
-        Inventory.logger.info(self)
         if self.product_id is None:
             raise DataValidationError('product_id is not set')
         if self.quantity is None:
