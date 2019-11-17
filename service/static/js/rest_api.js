@@ -94,7 +94,7 @@ $(function () {
 
         ajax.done(function(res){
             update_form_data(res)
-            flash_message(JSON.stringify(data) + " has been Created!")
+            flash_message("Success")
             list_all_inventories()
         });
 
