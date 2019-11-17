@@ -25,6 +25,8 @@ POST /inventory #6
 PUT /inventory/{inventory-id} #7
 DELETE /inventory/{inventory-id} #8
 PUT /inventory/{product-id}/disable to disable the product #25
+DELETE /inventory/reset 
+
 """
 
 import sys
@@ -237,6 +239,20 @@ def update_inventory(id):
     inventory.id = id
     inventory.save()
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
+
+######################################################################
+# DELETE ALL EXISTING INVENTORY (For testing only)
+######################################################################
+@app.route('/inventory/reset', methods=['DELETE'])
+def reset_inventory():
+    """
+    Delete all Inventory
+    This endpoint will delete all Inventory 
+    """
+    app.logger.info('Delete all inventory')
+    Inventory.remove_all()
+    return make_response('', status.HTTP_204_NO_CONTENT)
+
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

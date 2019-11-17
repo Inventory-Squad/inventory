@@ -355,6 +355,11 @@ class TestInventoryServer(unittest.TestCase):
         count_after_delete = self.get_invnetory_count()
         self.assertEqual(count_after_delete, count_before_delete - 1)
 
+    def test_reset_inventory(self):
+        """ Reset inventory """
+        resp = self.app.delete('/inventory/reset')
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
     #####  Mock data #####
     @patch('service.models.Inventory.find_by_condition')
     def test_bad_request(self, bad_request_mock):
