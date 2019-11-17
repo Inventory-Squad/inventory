@@ -77,6 +77,14 @@ class Inventory():
         """
         Creates a new Inventory in the database
         """
+        if self.product_id is None:
+            raise DataValidationError('product_id is not set')
+        if self.quantity is None:
+            raise DataValidationError('quantity is not set')
+        if self.restock_level is None:
+            raise DataValidationError('restock_level is not set')
+        if self.condition is None or self.condition != 'new' or self.condition != 'open_box' or self.conditoin != 'used':
+            self.condition = 'new'
         try:
             Inventory.logger.info("Create an new inventory")
             document = self.database.create_document(self.serialize())
