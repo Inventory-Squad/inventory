@@ -7,15 +7,15 @@ Background:
     Given the following products 
         | product_id | quantity | restock_level | condition | available |
         | 1          | 10       | 5             | new       | True      |
-        | 1          | 20       | 5             | open box  | False     |
+        | 1          | 20       | 5             | open_box  | False     |
         | 1          | 10       | 15            | used      | True      |
         | 2          | 20       | 5             | new       | False     |
-        | 2          | 10       | 5             | open box  | True      |
+        | 2          | 10       | 5             | open_box  | True      |
         | 2          | 20       | 15            | used      | False     |
 
 Scenario: The server is running
     When I visit the "Home Page"
-    Then I should see "Inventory REST API Service" in the title
+    Then I should see "Inventory RESTful Service" in the title
     And I should not see "404 Not Found"
 
 Scenario: Create an inventory
@@ -38,8 +38,8 @@ Scenario: Create an inventory
     Then I should see "5" in the "Product Id" field
     And I should see "50" in the "Quantity" field
     And I should see "20" in the "Restock Level" field
-    And I should see "New" in the "Condition" dropdow
-    And I should see "True" in the "Available" dropdow
+    And I should see "New" in the "Condition" dropdown
+    And I should see "True" in the "Available" dropdown
 
 Scenario: List all inventory    
 
