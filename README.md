@@ -119,3 +119,6 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 ##### Update an inventory
 
 - PATH: PUT `/inventory/{string:id}`
+
+## View App with UI
+https://nyu-inventory-service-f19.mybluemix.net/
