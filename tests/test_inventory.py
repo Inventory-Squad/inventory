@@ -54,6 +54,34 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(inventory.condition, 'new')
         self.assertEqual(inventory.available, True)
 
+    def test_create_an_inventory_bad_data(self):
+        """ Create an inventory with bad data  """
+        inventory_no_product_id = Inventory(quantity=100,\
+                                            restock_level=50, condition="new",\
+                                            available=True)
+        with self.assertRaises(DataValidationError) as error:
+            inventory_no_product_id.save()
+        self.assertEqual(str(error.exception), 'product_id is not set')
+
+        inventory_no_quantity = Inventory(product_id=1,\
+                                          restock_level=50, condition="new",\
+                                          available=True)
+        with self.assertRaises(DataValidationError) as error:
+            inventory_no_quantity.save()
+        self.assertEqual(str(error.exception), 'quantity is not set')
+
+        inventory_no_restock_level = Inventory(product_id=1, quantity=100,\
+                                               condition="new", available=True)
+        with self.assertRaises(DataValidationError) as error:
+            inventory_no_restock_level.save()
+        self.assertEqual(str(error.exception), 'restock_level is not set')
+
+        inventory_no_condition = Inventory(product_id=1, quantity=100,\
+                                            restock_level=50, available=True)
+        with self.assertRaises(DataValidationError) as error:
+            inventory_no_condition.save()
+        self.assertEqual(str(error.exception), 'condition is not set to new/open_box/used')
+
     def test_add_an_inventory(self):
         """ Create an inventory and add it to the database """
         inventory = Inventory.all()
@@ -194,6 +222,7 @@ class TestInventory(unittest.TestCase):
         self.assertIn('restock_level', data)
         self.assertEqual(data['restock_level'], 50)
         self.assertIn('condition', data)
+
         self.assertEqual(data['condition'], "new")
         self.assertIn('available', data)
         self.assertEqual(data['available'], True)
