@@ -62,6 +62,17 @@ Scenario: List all inventory by availability
 Scenario: List all inventory by restock need
 
 Scenario: Delete an inventory
+    When I visit the "Home Page"
+    And I set the "Product Id" to "1"
+    And I select "New" in the "Condition" dropdown
+    And I press the "Search" button
+    When I copy the first ID field from the search results
+    And I paste the "Inventory ID" field
+    And I press the "Delete" button
+    Then I should see the message "has been Deleted!"
+    When I paste the "Inventory ID" field
+    And I press the "Retrieve" button
+    Then I should see the message "Invalid Inventory"
 
 Scenario: Update an inventory
 

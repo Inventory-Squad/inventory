@@ -183,9 +183,8 @@ $(function () {
                 data: ''
             })
             ajax.done(function(res){
-                //alert(res.toSource())
                 $("#search_results").empty();
-                var table = '<table class="table-striped"><tr><thead>'
+                var table = '<table class="table-striped"><thead><tr>'
                 table += '<th class="col-md-3 text-center">ID</th>'
                 table += '<th class="col-md-2 text-center">Product Id</th>'
                 table += '<th class="col-md-1 text-center">Quantity</th>'
@@ -195,9 +194,9 @@ $(function () {
                 table += '</thead><tbody>'
                 for(var i = 0; i < res.length; i++) {
                     var inventory = res[i];
-                    table += "<t><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td><td>"+inventory.condition+"</td><td>"+inventory.available+"</td></tr>";
+                    table += "<tr><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td><td>"+inventory.condition+"</td><td>"+inventory.available+"</td></tr>";
                 }
-                table += '<tbody></table>'
+                table += '</tbody></table>'
                 $("#search_results").append(table);
                 flash_message('GET /inventory?restock=true Success!')
             });
@@ -336,20 +335,20 @@ $(function () {
 
             ajax.done(function(res){
                 $("#search_results").empty();
-                var table = '<table class="table-striped"><tr><thead>'
+                var table = '<table class="table-striped"><thead><tr>'
                 table += '<th class="col-md-3 text-center">ID</th>'
                 table += '<th class="col-md-2 text-center">Product Id</th>'
                 table += '<th class="col-md-1 text-center">Quantity</th>'
                 table += '<th class="col-md-2 text-center">Restock Level</th>'
                 table += '<th class="col-md-2 text-center">Condition</th>'
-                table += '<th class="col-md-2 text-center">Availability</th>'
+                table += '<th class="col-md-2 text-center">Availability</th></tr>'
                 table += '</thead><tbody>'
                 for(var i = 0; i < res.length; i++) {
                     var inventory = res[i];
                     table += "<tr><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td><td>"+inventory.condition+"</td><td>"+inventory.available+"</td></tr>";
                 }
 
-                table += '<tbody></table>'
+                table += '</tbody></table>'
                 $("#search_results").append(table)
                 flash_message('GET /inventory' + (queryString.length > 0 ? '?'+ queryString :'') +' Success! <br>')
             });

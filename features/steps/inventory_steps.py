@@ -101,7 +101,7 @@ def step_impl(context, name):
     element = context.driver.find_element_by_id('search_results')
     error_msg = "I should not see '%s' in '%s'" % (name, element.text)
     ensure(name in element.text, False, error_msg)
-    
+
 ##################################################################
 # These two function simulate copy and paste
 ##################################################################
@@ -115,7 +115,6 @@ def step_impl(context, element_name):
     context.clipboard = element.get_attribute('value')
     logging.info('Clipboard contains: %s', context.clipboard)
 
-
 @when('I paste the "{element_name}" field')
 def step_impl(context, element_name):
     element_name = element_name.replace(" ", "_")
@@ -126,6 +125,12 @@ def step_impl(context, element_name):
     element.clear()
     element.send_keys(context.clipboard)
 
+@when('I copy the first ID field from the search results')
+def step_impl(context):
+    element = context.driver.find_element_by_id("search_results")
+    row = element.find_elements_by_xpath("//table/tbody/tr/td[1]")
+    context.clipboard = row[0].text
+    logging.info('Clipboard contains: %s', context.clipboard)
 
 ##################################################################
 # This code works because of the following naming convention:
@@ -153,14 +158,14 @@ def step_impl(context, message):
 @then(u'I should see "{num}" entries')
 def step_impl(context, num):
     element = context.driver.find_element_by_id("search_results")
-    rows = element.find_elements_by_xpath("//table/tbody[2]/tr")
+    rows = element.find_elements_by_xpath("//table/tbody/tr")
     error_msg = f"Unexpected number of rows - {len(rows)}"
     ensure(len(rows), int(num), error_msg)
 
 @then(u'I should see "{num}" entries for product "{product_id}"')
 def step_impl(context, num, product_id):
     element = context.driver.find_element_by_id("search_results")
-    rows = element.find_elements_by_xpath("//table/tbody[2]/tr/td[2]")
+    rows = element.find_elements_by_xpath("//table/tbody/tr/td[2]")
     matching = [row for row in rows if (int(row.text) == int(product_id))]
     error_msg = f"Unexpected number of rows for {product_id} - {len(matching)}"
     ensure(len(matching), int(num), error_msg)
