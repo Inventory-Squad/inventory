@@ -69,6 +69,7 @@ Scenario: Delete an inventory
     When I copy the first ID field from the search results
     And I paste the "Inventory ID" field
     And I press the "Delete" button
+    Then I should see the message "has been Deleted!"
     When I paste the "Inventory ID" field
     And I press the "Retrieve" button
     Then I should see the message "Invalid Inventory"
