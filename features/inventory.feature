@@ -66,3 +66,8 @@ Scenario: Delete an inventory
 Scenario: Update an inventory
 
 Scenario: Disable an inventory
+    When I visit the "Home Page"
+    And I set the "Product Id" to "2"
+    And I press the "Disable" button
+    Then I should see the message "Product 2 has been Disabled!"
+    Then I should not see "True" in the results
