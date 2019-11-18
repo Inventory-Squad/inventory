@@ -4,7 +4,7 @@ Feature: The Inventory service back-end
     So that I can keep track of all inventory
 
 Background:
-    Given the following products 
+    Given the following products
         | product_id | quantity | restock_level | condition | available |
         | 1          | 10       | 5             | new       | True      |
         | 1          | 20       | 5             | open_box  | False     |
@@ -41,7 +41,7 @@ Scenario: Create an inventory
     And I should see "New" in the "Condition" dropdown
     And I should see "True" in the "Available" dropdown
 
-Scenario: List all inventory    
+Scenario: List all inventory
 
 Scenario: List all inventory by product id
 
@@ -60,3 +60,8 @@ Scenario: Delete an inventory
 Scenario: Update an inventory
 
 Scenario: Disable an inventory
+    When I visit the "Home Page"
+    And I set the "Product Id" to "2"
+    And I press the "Disable" button
+    Then I should see the message "Product 2 has been Disabled!"
+    Then I should not see "True" in the results
