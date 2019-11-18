@@ -4,7 +4,7 @@ Feature: The Inventory service back-end
     So that I can keep track of all inventory
 
 Background:
-    Given the following products 
+    Given the following products
         | product_id | quantity | restock_level | condition | available |
         | 1          | 10       | 5             | new       | True      |
         | 1          | 20       | 5             | open_box  | False     |
@@ -41,7 +41,13 @@ Scenario: Create an inventory
     And I should see "New" in the "Condition" dropdown
     And I should see "True" in the "Available" dropdown
 
-Scenario: List all inventory    
+Scenario: List all inventory
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see "6" entries
+    And I should see "3" entries for product "1"
+    And I should see "3" entries for product "2"
+    And I should see the message "Success"
 
 Scenario: List all inventory by product id
 
