@@ -146,3 +146,10 @@ def step_impl(context, message):
         )
     )
     expect(found).to_be(True)
+
+@then(u'I should see "{num}" entries')
+def step_impl(context, num):
+    element = context.driver.find_element_by_id("search_results")
+    rows = element.find_elements_by_xpath("//table/tbody[2]/tr")
+    error_msg = f"Unexpected number of rows - {len(rows)}"
+    ensure(len(rows), int(num), error_msg)
