@@ -45,6 +45,9 @@ Scenario: List all inventory
     When I visit the "Home Page"
     And I press the "Search" button
     Then I should see "6" entries
+    And I should see "3" entries for product "1"
+    And I should see "3" entries for product "2"
+    And I should see the message "Success"
 
 Scenario: List all inventory by product id
 
