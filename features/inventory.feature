@@ -95,7 +95,7 @@ Scenario: List all inventory by availability
     And I select "True" in the "Available" dropdown
     And I press the "Search" button
     Then I should see "1 10 5 new" in the results
-    Then I should see "1 10 15 used" in the results
+    And I should see "1 10 15 used" in the results
     And I should see "2 10 5 open_box" in the results
     And I should see the message "Success"
 
