@@ -67,7 +67,6 @@ def step_impl(context, text, element_name):
     element_name = element_name.replace(" ", "_")
     element_id = element_name.lower()
     element = Select(context.driver.find_element_by_id(element_id))
-    text = text.replace(" ", "_")
     element.select_by_visible_text(text)
 
 @then(u'I should see "{text}" in the "{element_name}" dropdown')
@@ -101,6 +100,20 @@ def step_impl(context, name):
     element = context.driver.find_element_by_id('search_results')
     error_msg = "I should not see '%s' in '%s'" % (name, element.text)
     ensure(name in element.text, False, error_msg)
+
+@then('I should see "{name}" in the results')
+def step_impl(context, name):
+    element = context.driver.find_element_by_id('search_results')
+    error_msg = "I should see '%s' in '%s'" % (name, element.text)
+    ensure(name in element.text, True, error_msg)
+
+@when(u'I change "{element_name}" dropdown to "{text}"')
+def step_impl(context, element_name, text):
+    element_name = element_name.replace(" ", "_")
+    element_id = element_name.lower()
+    print(element_id)
+    element = Select(context.driver.find_element_by_id(element_id))
+    element.select_by_visible_text(text)
 
 ##################################################################
 # These two function simulate copy and paste

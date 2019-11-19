@@ -89,6 +89,21 @@ Scenario: Delete an inventory
     Then I should see the message "Invalid Inventory"
 
 Scenario: Update an inventory
+    When I visit the "Home Page"
+    And I set the "Product Id" to "2"
+    And I select "New" in the "Condition" dropdown
+    And I press the "Search" button
+    Then I should see "2 20 5 new" in the results
+    When I copy the first ID field from the search results
+    And I paste the "Inventory ID" field
+    And I press the "Retrieve" button
+    Then I should see "New" in the "Condition" dropdown
+    When I change "Condition" dropdown to "Open Box"
+    And I press the "Update" button
+    Then I should see the message "has been Updated!"
+    And I should see "Open Box" in the "Condition" dropdown
+    And I should see "2 20 5 open_box" in the results
+    And I should not see "2 20 5 new " in the results
 
 Scenario: Disable an inventory
     When I visit the "Home Page"
