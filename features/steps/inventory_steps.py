@@ -32,7 +32,7 @@ def step_impl(context):
             "quantity": int(row['quantity']),
             "restock_level": int(row['restock_level']),
             "condition": row["condition"],
-            "available": bool(row['available']),
+            "available": True if row['available'].lower() == "true" else False,
         }
         payload = json.dumps(data)
         context.resp = requests.post(create_url, data=payload, headers=headers)

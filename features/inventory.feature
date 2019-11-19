@@ -47,19 +47,64 @@ Scenario: List all inventory
     Then I should see "6" entries
     And I should see "3" entries for product "1"
     And I should see "3" entries for product "2"
+    And I should see "1 10 5 new true" in the results
+    And I should see "1 20 5 open_box false" in the results
+    And I should see "1 10 15 used true" in the results
+    And I should see "2 20 5 new false" in the results
+    And I should see "2 10 5 open_box true" in the results
+    And I should see "2 20 15 used false" in the results
     And I should see the message "Success"
 
 Scenario: List all inventory by product id
+    When I visit the "Home Page"
+    And I set the "Product Id" to "1"
+    And I press the "Search" button
+    Then I should see "3" entries
+    And I should see "1 10 5 new" in the results
+    And I should see "1 20 5 open_box" in the results
+    And I should see "1 10 15 used" in the results
+    And I should see the message "Success"
 
 Scenario: List all inventory by condition
+    When I visit the "Home Page"
+    And I select "New" in the "Condition" dropdown
+    And I press the "Search" button
+    Then I should see "1 10 5 new" in the results
+    And I should see "2 20 5 new" in the results
+    And I should see the message "Success"
 
 Scenario: List all inventory by condition and product id
+    When I visit the "Home Page"
+    And I set the "Product Id" to "1"
+    And I select "New" in the "Condition" dropdown
+    And I press the "Search" button
+    Then I should see "1 10 5 new true" in the results
+    And I should see the message "Success"
 
 Scenario: List all inventory by restock level
+    When I visit the "Home Page"
+    And I set the "Restock Level" to "15"
+    And I press the "Search" button
+    Then I should see "2" entries
+    And I should see "1 10 15 used" in the results
+    And I should see "2 20 15 used" in the results
+    And I should see the message "Success"
 
 Scenario: List all inventory by availability
+    When I visit the "Home Page"
+    And I select "True" in the "Available" dropdown
+    And I press the "Search" button
+    Then I should see "1 10 5 new" in the results
+    Then I should see "1 10 15 used" in the results
+    And I should see "2 10 5 open_box" in the results
+    And I should see the message "Success"
 
 Scenario: List all inventory by restock need
+    When I visit the "Home Page"
+    And I press the "restock-list" button
+    Then I should see "1" entries
+    And I should see "1 10 15 used" in the results
+    And I should see the message "Success"
 
 Scenario: Retrieve an inventory by inventory id
     When I visit the "Home Page"
