@@ -301,7 +301,7 @@ $(function () {
                 queryString += 'product-id=' + product_id
             } else if (queryString.length > 0) {
                 queryString += '&product-id=' + product_id
-                if(!condition) {
+                if(!condition || !available) {
                     validQuery = false;
                 }
             }
@@ -356,7 +356,7 @@ $(function () {
             ajax.fail(function(res){
                 $("#search_results").empty()
                 clear_form_data()
-                flash_message(res.responseJSON.message + '<br> Only accept following search request:<br>'+ 'GET /inventory?product-id={product-id}<br>GET /inventory?available={isAvailable}<br>GET /inventory?restock-level={restock-level-value}<br>GET /inventory?condition={condition}<br>GET /inventory?condition={condition}&product-id={product-id}<br>')
+                flash_message(res.responseJSON.message + '<br> Only accept following search request:<br>'+ 'GET /inventory?product-id={product-id}<br>GET /inventory?available={isAvailable}<br>GET /inventory?available={isAvailable}&product-id={product-id}<br>GET /inventory?restock-level={restock-level-value}<br>GET /inventory?condition={condition}<br>GET /inventory?condition={condition}&product-id={product-id}<br>')
             });
         } else {
             invalidSearch(queryString)
@@ -367,7 +367,7 @@ $(function () {
     function invalidSearch(queryString) {
         $("#search_results").empty()
         clear_form_data()
-        flash_message('GET /inventory?' + queryString + ' Failed! <br> Only accept following search request:<br>'+ 'GET /inventory?product-id={product-id}<br>GET /inventory?available={isAvailable}<br>GET /inventory?restock-level={restock-level-value}<br>GET /inventory?condition={condition}<br>GET /inventory?condition={condition}&product-id={product-id}<br>')
+        flash_message('GET /inventory?' + queryString + ' Failed! <br> Only accept following search request:<br>'+ 'GET /inventory?product-id={product-id}<br>GET /inventory?available={isAvailable}<br>GET /inventory?available={isAvailable}&product-id={product-id}<br>GET /inventory?restock-level={restock-level-value}<br>GET /inventory?condition={condition}<br>GET /inventory?condition={condition}&product-id={product-id}<br>')
     }
 
 })
