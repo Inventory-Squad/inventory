@@ -397,7 +397,9 @@ class TestInventory(unittest.TestCase):
         """ Find an inventory by availability """
         Inventory(product_id=1, quantity=100, restock_level=50,
                   condition="new", available=False).save()
-        Inventory(product_id=1, quantity=100, restock_level=50,
+        Inventory(product_id=1, quantity=50, restock_level=50,
+                  condition="used", available=False).save()
+        Inventory(product_id=2, quantity=10, restock_level=20,
                   condition="used", available=False).save()
         Inventory(product_id=2, quantity=21, restock_level=20,
                   condition="used", available=True).save()
