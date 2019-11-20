@@ -296,12 +296,21 @@ $(function () {
             }
         }
 
+        if ($("#available").val()) {
+            if (queryString.length > 0) {
+                queryString += '&available=' + available
+                validQuery = false
+            } else {
+                queryString += 'available=' + available
+            }
+        }
+        
         if (product_id) {
             if( queryString.length == 0) {
                 queryString += 'product-id=' + product_id
             } else if (queryString.length > 0) {
                 queryString += '&product-id=' + product_id
-                if(!condition || !available) {
+                if(!condition && !available) {
                     validQuery = false;
                 }
             }
@@ -313,15 +322,6 @@ $(function () {
                 validQuery = false
             } else {
                 queryString += 'restock-level=' + restock_level
-            }
-        }
-
-        if ($("#available").val()) {
-            if (queryString.length > 0) {
-                queryString += '&available=' + available
-                validQuery = false
-            } else {
-                queryString += 'available=' + available
             }
         }
 
