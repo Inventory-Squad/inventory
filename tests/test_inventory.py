@@ -397,6 +397,10 @@ class TestInventory(unittest.TestCase):
         """ Find an inventory by availability """
         Inventory(product_id=1, quantity=100, restock_level=50,
                   condition="new", available=False).save()
+        Inventory(product_id=1, quantity=50, restock_level=50,
+                  condition="used", available=False).save()
+        Inventory(product_id=2, quantity=10, restock_level=20,
+                  condition="used", available=False).save()
         Inventory(product_id=2, quantity=21, restock_level=20,
                   condition="used", available=True).save()
         inventory = Inventory.find_by_availability(True)
@@ -406,6 +410,8 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(inventory[0].restock_level, 20)
         self.assertEqual(inventory[0].condition, "used")
         self.assertEqual(inventory[0].available, True)
+        inventory = Inventory.find_by_availability_with_pid(False, 1)
+        self.assertEqual(len(inventory), 2)
 
     def test_find(self):
         """ Find a Inventory by ID """

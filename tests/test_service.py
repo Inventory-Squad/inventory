@@ -286,30 +286,56 @@ class TestInventoryServer(unittest.TestCase):
     def test_query_inventory_list_by_availability(self):
         """ Query an Inventory by availability """
         inventories = []
-        for _ in range(0, 2):
+        test = Inventory(product_id=1, quantity=30, restock_level=20,
+                             condition='new', available=True)
+        test.save()
+        inventories.append(test)
+        test = Inventory(product_id=2, quantity=30, restock_level=20,
+                             condition='used', available=False)
+        test.save()
+        inventories.append(test)
+        for _ in range(0, 3):
             test = Inventory(product_id=_, quantity=30, restock_level=20,
                              condition='new', available=True)
             test.save()
             inventories.append(test)
-        for _ in range(2, 5):
+        for _ in range(1, 5):
             test = Inventory(product_id=_, quantity=30, restock_level=50,
                              condition='new', available=False)
             test.save()
             inventories.append(test)
+        # /inventory?available={availability} 
         resp = self.app.get('/inventory',
                             query_string='available=true')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(len(data), 2)
+        self.assertEqual(len(data), 4)
         for inventory in data:
             self.assertEqual(inventory['available'], True)
         resp = self.app.get('/inventory',
                             query_string='available=false')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(len(data), 3)
+        self.assertEqual(len(data), 5)
         for inventory in data:
             self.assertEqual(inventory['available'], False)
+        # /inventory?product-id={pid}&available={availability}
+        resp = self.app.get('/inventory',
+                            query_string='product-id=1&available=true')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+        for inventory in data:
+            self.assertEqual(inventory['product_id'], 1)
+            self.assertEqual(inventory['available'], True)
+        resp = self.app.get('/inventory',
+                            query_string='product-id=2&available=false')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+        for inventory in data:
+            self.assertEqual(inventory['product_id'], 2)
+            self.assertEqual(inventory['available'], False)       
 
     def test_update_inventory(self):
         """ Update an existing Inventory """
