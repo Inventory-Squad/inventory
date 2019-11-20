@@ -170,13 +170,19 @@ def list_inventory():
             inventories = Inventory.find_by_condition_with_pid(condition, int(product_id))
         elif not product_id:
             inventories = Inventory.find_by_condition(condition)
+    elif available:
+        if product_id:
+            if available == 'true':
+                inventories = Inventory.find_by_availability_with_pid(True, int(product_id))
+            elif available == 'false':
+                inventories = Inventory.find_by_availability_with_pid(False, int(product_id))
+        elif not product_id:
+            if available == 'true':
+                inventories = Inventory.find_by_availability(True)
+            elif available == 'false':
+                inventories = Inventory.find_by_availability(False)
     elif product_id:
         inventories = Inventory.find_by_product_id(int(product_id))
-    elif available:
-        if available == 'true':
-            inventories = Inventory.find_by_availability(True)
-        elif available == 'false':
-            inventories = Inventory.find_by_availability(False)
     else:
         inventories = Inventory.all()
     results = [e.serialize() for e in inventories]

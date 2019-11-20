@@ -288,8 +288,6 @@ class TestInventoryServer(unittest.TestCase):
         inventories = []
         test = Inventory(product_id=1, quantity=30, restock_level=20,
                              condition='new', available=True)
-        test_pid = test.product_id
-        test_availability = test.available
         test.save()
         inventories.append(test)
         for _ in range(0, 2):
@@ -319,13 +317,12 @@ class TestInventoryServer(unittest.TestCase):
             self.assertEqual(inventory['available'], False)
         # /inventory?product-id={pid}&available={availability}
         resp = self.app.get('/inventory',
-                            query_string='product-id={0}&available={1}'
-                            .format(test_pid, test_availability))   
+                            query_string='product-id=1&available=true')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 2)
         for inventory in data:
-            self.assertEqual(inventory['product_id'], test_pid)
+            self.assertEqual(inventory['product_id'], 1)
             self.assertEqual(inventory['available'], True)
 
     def test_update_inventory(self):
