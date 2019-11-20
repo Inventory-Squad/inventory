@@ -290,7 +290,11 @@ class TestInventoryServer(unittest.TestCase):
                              condition='new', available=True)
         test.save()
         inventories.append(test)
-        for _ in range(0, 2):
+        test = Inventory(product_id=2, quantity=30, restock_level=20,
+                             condition='used', available=False)
+        test.save()
+        inventories.append(test)
+        for _ in range(0, 3):
             test = Inventory(product_id=_, quantity=30, restock_level=20,
                              condition='new', available=True)
             test.save()
@@ -305,14 +309,14 @@ class TestInventoryServer(unittest.TestCase):
                             query_string='available=true')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(len(data), 3)
+        self.assertEqual(len(data), 4)
         for inventory in data:
             self.assertEqual(inventory['available'], True)
         resp = self.app.get('/inventory',
                             query_string='available=false')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(len(data), 4)
+        self.assertEqual(len(data), 5)
         for inventory in data:
             self.assertEqual(inventory['available'], False)
         # /inventory?product-id={pid}&available={availability}
@@ -324,6 +328,14 @@ class TestInventoryServer(unittest.TestCase):
         for inventory in data:
             self.assertEqual(inventory['product_id'], 1)
             self.assertEqual(inventory['available'], True)
+        resp = self.app.get('/inventory',
+                            query_string='product-id=2&available=false')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+        for inventory in data:
+            self.assertEqual(inventory['product_id'], 2)
+            self.assertEqual(inventory['available'], False)       
 
     def test_update_inventory(self):
         """ Update an existing Inventory """
