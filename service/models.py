@@ -263,6 +263,19 @@ class Inventory():
     @classmethod
     @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
            tries=RETRY_COUNT, logger=logger)
+    def find_by_availability_with_pid(cls, available, pid):
+        """ Find an Inventory by availability and product_id
+        Args:
+            available (boolean): the availability of the Inventory you
+            want to match
+            product_id (int): the product_id of the Inventory you
+            want to match
+        """
+        return cls.find_by(available=available, product_id=pid)
+
+    @classmethod
+    @retry(HTTPError, delay=RETRY_DELAY, backoff=RETRY_BACKOFF,
+           tries=RETRY_COUNT, logger=logger)
     def find_by_condition(cls, condition):
         """ Find an Inventory by condition
         Args:
