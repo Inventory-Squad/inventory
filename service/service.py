@@ -25,7 +25,7 @@ POST /inventory #6
 PUT /inventory/{inventory-id} #7
 DELETE /inventory/{inventory-id} #8
 PUT /inventory/{product-id}/disable to disable the product #25
-DELETE /inventory/reset 
+DELETE /inventory/reset
 
 """
 
@@ -167,15 +167,18 @@ def list_inventory():
         inventories = Inventory.find_by_restock_level(int(restock_level))
     elif condition:
         if product_id:
-            inventories = Inventory.find_by_condition_with_pid(condition, int(product_id))
+            inventories = Inventory.find_by_condition_with_pid(
+                condition, int(product_id))
         elif not product_id:
             inventories = Inventory.find_by_condition(condition)
     elif available:
         if product_id:
             if available == 'true':
-                inventories = Inventory.find_by_availability_with_pid(True, int(product_id))
+                inventories = Inventory.find_by_availability_with_pid(
+                                        True, int(product_id))
             elif available == 'false':
-                inventories = Inventory.find_by_availability_with_pid(False, int(product_id))
+                inventories = Inventory.find_by_availability_with_pid(
+                                        False, int(product_id))
         elif not product_id:
             if available == 'true':
                 inventories = Inventory.find_by_availability(True)
@@ -253,7 +256,7 @@ def update_inventory(id):
 def reset_inventory():
     """
     Delete all Inventory
-    This endpoint will delete all Inventory 
+    This endpoint will delete all Inventory
     """
     app.logger.info('Delete all inventory')
     Inventory.remove_all()
