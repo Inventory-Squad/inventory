@@ -310,7 +310,7 @@ $(function () {
                 queryString += 'product-id=' + product_id
             } else if (queryString.length > 0) {
                 queryString += '&product-id=' + product_id
-                if(!condition && !available) {
+                if(!condition && !$("#available").val()) {
                     validQuery = false;
                 }
             }
