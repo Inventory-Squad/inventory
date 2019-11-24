@@ -5,7 +5,7 @@ import os
 from behave import *
 from selenium import webdriver
 
-WAIT_SECONDS = 120
+WAIT_SECONDS = 180
 BASE_URL = os.getenv('BASE_URL', 'http://localhost:5000')
 
 
