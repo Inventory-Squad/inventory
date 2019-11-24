@@ -295,14 +295,10 @@ class DisableResource(Resource):
         This endpoint will update the availability of an Inventory to FALSE
         based on the id specified in the path
         """
-        app.logger.info('Request to disable inventory with id: %s', product_id)
-        check_content_type('application/json')
-
+        app.logger.info('Request to disable inventory with product id: %s', product_id)
         inventory = Inventory.find_by_product_id(int(product_id))
-
         for elem in inventory:
             elem.available = False
-            elem.product_id = product_id
             elem.save()
         return [elem.serialize() for elem in inventory], status.HTTP_200_OK
 
