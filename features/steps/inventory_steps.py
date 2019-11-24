@@ -161,7 +161,8 @@ def step_impl(context, button):
 
 @then('I should see the message "{message}"')
 def step_impl(context, message):
-    found = WebDriverWait(context.driver, 80, 0.5).until(
+    context.driver.set_page_load_timeout(60)
+    found = WebDriverWait(context.driver, 60, 0.5).until(
         expected_conditions.text_to_be_present_in_element(
             (By.ID, 'flash_message'),
             message
