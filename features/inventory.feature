@@ -164,4 +164,7 @@ Scenario: Disable an inventory
     And I set the "Product Id" to "2"
     And I press the "Disable" button
     Then I should see the message "Product 2 has been Disabled!"
-    Then I should not see "True" in the results
+    When I press the "Clear" button
+    And I set the "Product Id" to "2"
+    And I press the "Search" button
+    Then I should not see "true" in the results
