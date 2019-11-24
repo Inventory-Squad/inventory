@@ -122,3 +122,6 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 
 ## View App with UI
 https://nyu-inventory-service-f19.mybluemix.net/
+
+## View Product with UI
+https://nyu-inventory-service-f19-prod.mybluemix.net/
