@@ -103,12 +103,12 @@ def step_impl(context, name):
 
 @then('I should see "{name}" in the results')
 def step_impl(context, name):
-    element = WebDriverWait(context.driver, WAIT_SECONDS).until(
-        expected_conditions.presence_of_element_located(
-            (By.ID, 'search_results'))
-    )
-    error_msg = "I should see '%s' in '%s'" % (name, element.text)
-    ensure(name in element.text, True, error_msg)
+    found = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'search_results'),
+            name
+        ))
+    expect(found).to_be(True)
 
 @when(u'I change "{element_name}" dropdown to "{text}"')
 def step_impl(context, element_name, text):
