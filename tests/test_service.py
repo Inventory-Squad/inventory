@@ -28,7 +28,6 @@ from unittest.mock import patch
 from flask_api import status    # HTTP Status Codes
 from service.models import Inventory, DataValidationError
 from service.service import app, initialize_logging
-from service.service import internal_server_error
 from inventory_factory import InventoryFactory
 
 ######################################################################
@@ -77,7 +76,13 @@ class TestInventoryServer(unittest.TestCase):
         """ Test the Home Page """
         resp = self.app.get('/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertIn(b'Inventory REST API Service',  resp.data)
+        self.assertIn(b'Inventory REST API Service', resp.data)
+
+    def test_health_check(self):
+        """ Test the Health Check """
+        resp = self.app.get('/healthcheck')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertIn(b'Healthy', resp.data)
 
     def test_disable_inventory(self):
         """ Disable an existing Inventory """
@@ -248,12 +253,12 @@ class TestInventoryServer(unittest.TestCase):
     def test_query_by_condition(self):
         """ Query an Inventory by Condition """
         inventories = []
-        for _ in range(0, 2):
+        for _ in range(1, 3):
             test = Inventory(product_id=_, quantity=_, restock_level=20,
                              condition='new', available=True)
             test.save()
             inventories.append(test)
-        for _ in range(0, 2):
+        for _ in range(1, 3):
             test = Inventory(product_id=_, quantity=_, restock_level=20,
                              condition='used', available=True)
             test.save()
@@ -374,11 +379,11 @@ class TestInventoryServer(unittest.TestCase):
     def test_delete_inventory(self):
         """ Delete an inventory """
         inventory = self._create_inventories(2)[0]
-        count_before_delete = self.get_invnetory_count()
+        count_before_delete = self.get_inventory_count()
         resp = self.app.delete('/inventory/{}'.format(inventory.id),
                                content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        count_after_delete = self.get_invnetory_count()
+        count_after_delete = self.get_inventory_count()
         self.assertEqual(count_after_delete, count_before_delete - 1)
 
     def test_reset_inventory(self):
@@ -386,26 +391,13 @@ class TestInventoryServer(unittest.TestCase):
         resp = self.app.delete('/inventory/reset')
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
-    #####  Mock data #####
+    ####  Mock data #####
     @patch('service.models.Inventory.find_by_condition')
     def test_bad_request(self, bad_request_mock):
         """ Test a bad request error from find_by_condition """
         bad_request_mock.side_effect = DataValidationError()
         resp = self.app.get('/inventory', query_string='condition=wrong')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-    # @patch('service.models.Inventory.find_by_condition')
-    # def test_internal_server_error(self, request_mock):
-    #     """ Test a request with internal_server_error """
-    #     request_mock.side_effect = internal_server_error("")
-    #     resp = self.app.get('/inventory', query_string='condition=wrong')
-    #     self.assertEqual(resp.status_code, \
-    #                      status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    def test_invalid_method_request(self):
-        """ Test an invalid request error """
-        resp = self.app.delete('/inventory', content_type='application/json')
-        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_bad_content_type(self):
         """ Bad content type return 415 """
@@ -442,7 +434,7 @@ class TestInventoryServer(unittest.TestCase):
 # Utility functions
 ######################################################################
 
-    def get_invnetory_count(self):
+    def get_inventory_count(self):
         """ save the current number of invnetory """
         resp = self.app.get('/inventory')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
