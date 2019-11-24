@@ -103,7 +103,10 @@ def step_impl(context, name):
 
 @then('I should see "{name}" in the results')
 def step_impl(context, name):
-    element = context.driver.find_element_by_id('search_results')
+    element = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located(
+            (By.ID, 'search_results'))
+    )
     error_msg = "I should see '%s' in '%s'" % (name, element.text)
     ensure(name in element.text, True, error_msg)
 
