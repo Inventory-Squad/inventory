@@ -17,7 +17,6 @@ from selenium.webdriver.support import expected_conditions
 
 WAIT_SECONDS = int(getenv('WAIT_SECONDS', '60'))
 
-
 @given(u'the following products')
 def step_impl(context):
     """ Delete all Inventory entries and load new ones """
@@ -95,13 +94,13 @@ def step_impl(context, element_name):
     element = context.driver.find_element_by_id(element_id)
     expect(element.get_attribute('value')).to_be(u'')
 
-@then('I should not see "{name}" in the results')
+@then(u'I should not see "{name}" in the results')
 def step_impl(context, name):
     element = context.driver.find_element_by_id('search_results')
     error_msg = "I should not see '%s' in '%s'" % (name, element.text)
     ensure(name in element.text, False, error_msg)
 
-@then('I should see "{name}" in the results')
+@then(u'I should see "{name}" in the results')
 def step_impl(context, name):
     found = WebDriverWait(context.driver, WAIT_SECONDS).until(
         expected_conditions.text_to_be_present_in_element(
@@ -114,7 +113,6 @@ def step_impl(context, name):
 def step_impl(context, element_name, text):
     element_name = element_name.replace(" ", "_")
     element_id = element_name.lower()
-    print(element_id)
     element = Select(context.driver.find_element_by_id(element_id))
     element.select_by_visible_text(text)
 
