@@ -39,11 +39,33 @@ from service.models import Inventory, DataValidationError
 # Import Flask application
 from . import app
 
+######################################################################
+# GET INDEX
+######################################################################
+@app.route('/')
+def index():
+    """ Root URL response """
+    return app.send_static_file('index.html')
+
+######################################################################
+# GET HEALTH CHECK
+######################################################################
+@app.route('/healthcheck')
+def healthcheck():
+    """ Let them know our heart is still beating """
+    return make_response(jsonify(status=200, message='Healthy'),
+                         status.HTTP_200_OK)
+
 api = Api(app,
           version='1.0.0',
           title='Inventory REST API Service',
           description='This is a Inventory server.',
-          default='inventory',)
+          default='inventory',
+          default_label='Inventory operations',
+          doc='/apidocs',
+         )
+
+app.config['RESTPLUS_MASK_SWAGGER'] = False
 
 inventory_model = api.model('Inventory', {
     '_id': fields.String(readOnly=True,
@@ -87,20 +109,20 @@ create_model = api.model('Inventory', {
 # query string arguments
 inventory_args = reqparse.RequestParser()
 inventory_args.add_argument('product-id', type=int,
-                            required=False, help='List Inventory \
-                            by product id')
+                            required=False, location='args', \
+                            help='List Inventory by product id')
 inventory_args.add_argument('condition', type=str,
-                            required=False, help='List Inventory \
-                            by condition')
+                            required=False, location='args', \
+                            help='List Inventory by condition')
 inventory_args.add_argument('available', type=inputs.boolean,
-                            required=False, help='List Inventory \
-                            by availability')
+                            required=False, location='args', \
+                            help='List Inventory by availability')
 inventory_args.add_argument('restock-level', type=int,
-                            required=False, help='List Inventory \
-                            by restock level')
+                            required=False, location='args', \
+                            help='List Inventory by restock level')
 inventory_args.add_argument('restock', type=inputs.boolean,
-                            required=False, help='List Inventory \
-                            by need restock or not')
+                            required=False, location='args', \
+                            help='List Inventory by need restock or not')
 
 ######################################################################
 # Error Handlers
@@ -115,23 +137,6 @@ def request_validation_error(error):
         'error': 'Bad Request',
         'message': message
     }, status.HTTP_400_BAD_REQUEST
-
-######################################################################
-# GET HEALTH CHECK
-######################################################################
-@app.route('/healthcheck')
-def healthcheck():
-    """ Let them know our heart is still beating """
-    return make_response(jsonify(status=200, message='Healthy'),
-                         status.HTTP_200_OK)
-
-######################################################################
-# GET INDEX
-######################################################################
-@app.route('/')
-def index():
-    """ Root URL response """
-    return app.send_static_file('index.html')
 
 ######################################################################
 #  PATH: /inventory/{id}
@@ -149,6 +154,7 @@ class InventoryResource(Resource):
     #------------------------------------------------------------------
     # RETRIEVE A INVENTORY
     #------------------------------------------------------------------
+    @api.doc('get_inventory')
     @api.response(404, 'Inventory not found')
     @api.marshal_with(inventory_model)
     def get(self, inventory_id):
@@ -167,6 +173,7 @@ class InventoryResource(Resource):
     #------------------------------------------------------------------
     # DELETE AN INVENTORY
     #------------------------------------------------------------------
+    @api.doc('delete_inventory')
     @api.response(204, 'Inventory deleted')
     def delete(self, inventory_id):
         """
@@ -184,6 +191,7 @@ class InventoryResource(Resource):
     #------------------------------------------------------------------
     # UPDATE AN EXISTING INVENTORY
     #------------------------------------------------------------------
+    @api.doc('update_inventory')
     @api.response(404, 'Inventory not found')
     @api.response(400, 'The posted Inventory data was not valid')
     @api.expect(inventory_model)
@@ -215,6 +223,7 @@ class InventoryCollection(Resource):
     #------------------------------------------------------------------
     # ADD A NEW Inventory
     #------------------------------------------------------------------
+    @api.doc('create_inventory')
     @api.expect(create_model)
     @api.response(400, 'The posted data was not valid')
     @api.response(201, 'Inventory created successfully')
@@ -246,7 +255,7 @@ class InventoryCollection(Resource):
     # GET request to /inventory?restock-level={restock-level-value}
     # GET request to /inventory?condition={condition}
     # GET request to /inventory?condition={condition}&product-id={product-id}
-
+    @api.doc('list_inventory')
     @api.expect(inventory_args, validate=True)
     @api.marshal_list_with(inventory_model)
     def get(self):
@@ -289,6 +298,7 @@ class InventoryCollection(Resource):
 @api.param('product_id', 'The Product identifier')
 class DisableResource(Resource):
     """ Disable actions on an Inventory that has a specific product id"""
+    @api.doc('disable_inventory')
     def put(self, product_id):
         """
         Disable an Inventory
