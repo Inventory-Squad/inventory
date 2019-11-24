@@ -1,10 +1,28 @@
 ---
 # This manifest deploys a Python Flask application
 applications:
+
+- name: nyu-inventory-service-f19-prod
+  path: .
+  instances: 1
+  memory: 128M
+  routes:
+  - route: nyu-inventory-service-f19-prod.mybluemix.net
+  disk_quota: 1024M
+  buildpack: python_buildpack
+  timeout: 180
+  services:
+  - Cloudant
+  env:
+    FLASK_APP : service:app
+    FLASK_DEBUG : false
+
+
+
 - name: nyu-inventory-service-f19
   path: .
-  instances: 2
-  memory: 64M
+  instances: 1
+  memory: 128M
   #random-route: true
   routes:
   - route: nyu-inventory-service-f19.mybluemix.net
@@ -18,3 +36,5 @@ applications:
   env:
     FLASK_APP : service:app
     FLASK_DEBUG : false
+
+
