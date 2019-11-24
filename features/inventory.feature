@@ -155,16 +155,18 @@ Scenario: Update an inventory
     When I change "Condition" dropdown to "Open Box"
     And I press the "Update" button
     Then I should see the message "has been Updated!"
-    And I should see "Open Box" in the "Condition" dropdown
-    And I should see "2 20 5 open_box" in the results
-    And I should not see "2 20 5 new " in the results
+    Then I should see "Open Box" in the "Condition" dropdown
+    Then I should see "2 20 5 open_box" in the results
+    Then I should not see "2 20 5 new" in the results
 
 Scenario: Disable an inventory
     When I visit the "Home Page"
     And I set the "Product Id" to "2"
     And I press the "Disable" button
-    Then I should see the message "Product 2 has been Disabled!"
+    Then I should see the message "has been Disabled!"
     When I press the "Clear" button
     And I set the "Product Id" to "2"
     And I press the "Search" button
-    Then I should not see "true" in the results
+    Then I should not see "2 20 5 new true" in the results
+    Then I should not see "2 10 5 open_box true" in the results
+    Then I should not see "2 20 15 used true" in the results

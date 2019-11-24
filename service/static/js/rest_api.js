@@ -45,7 +45,7 @@ $(function () {
 
         ajax.done(function(res){
             $("#search_results").empty();
-            var table = '<table class="table-striped"><tr><thead>'
+            var table = '<table class="table-striped"><thead><tr>'
             table += '<th class="col-md-3 text-center">ID</th>'
             table += '<th class="col-md-2 text-center">Product Id</th>'
             table += '<th class="col-md-1 text-center">Quantity</th>'
@@ -55,9 +55,9 @@ $(function () {
             table += '</thead><tbody>'
             for(var i = 0; i < res.length; i++) {
                 var inventory = res[i];
-                table += "<tr ><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td><td>"+inventory.condition+"</td><td>"+inventory.available+"</td></tr>";
+                table += "<tr><td>"+inventory._id+"</td><td>"+inventory.product_id+"</td><td>"+inventory.quantity+"</td><td>"+inventory.restock_level+"</td><td>"+inventory.condition+"</td><td>"+inventory.available+"</td></tr>";
             }
-            table += '<tbody></table>'
+            table += '</tbody></table>'
             $("#search_results").append(table);
         });
 
@@ -304,7 +304,7 @@ $(function () {
                 queryString += 'available=' + available
             }
         }
-        
+
         if (product_id) {
             if( queryString.length == 0) {
                 queryString += 'product-id=' + product_id
