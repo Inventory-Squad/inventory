@@ -62,7 +62,7 @@ api = Api(app,
           description='This is a Inventory server.',
           default='inventory',
           default_label='Inventory operations',
-          doc='/apidocs',
+          doc='/apidocs/index.html',
          )
 
 app.config['RESTPLUS_MASK_SWAGGER'] = False
