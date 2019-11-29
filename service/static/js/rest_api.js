@@ -239,7 +239,7 @@ $(function () {
     // ****************************************
 
     $("#delete-btn").click(function () {
-        var inventory_id = $("#inventory_id").val();
+        var inventory_id = $("#inventory_id").val().trim();
 
         var ajax = $.ajax({
             type: "DELETE",
@@ -255,7 +255,7 @@ $(function () {
         });
 
         ajax.fail(function(res){
-            flash_message("Server error!")
+            flash_message(res.responseJSON.message)
         });
     });
 
