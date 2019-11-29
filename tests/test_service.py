@@ -287,6 +287,9 @@ class TestInventoryServer(unittest.TestCase):
         for i in data:
             self.assertEqual(i['condition'], test_condition)
             self.assertEqual(i['product_id'], test_pid)
+        # resp = self.app.get('/inventory',
+        #             query_string='condition'.format())
+        # self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_query_inventory_list_by_availability(self):
         """ Query an Inventory by availability """
@@ -341,6 +344,18 @@ class TestInventoryServer(unittest.TestCase):
         for inventory in data:
             self.assertEqual(inventory['product_id'], 2)
             self.assertEqual(inventory['available'], False)       
+
+    def test_invalid_query(self):
+        """ Query Inventories if the request argument is invalid """
+        inventories = []
+        for _ in range(5):
+            test = Inventory(product_id=_, quantity=_, restock_level=3,
+                             condition="new", available=True)
+            test.save()
+            inventories.append(test)
+        resp = self.app.get('/inventory',
+                            query_string='invalidpara=1')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_inventory(self):
         """ Update an existing Inventory """
