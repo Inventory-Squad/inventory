@@ -151,24 +151,27 @@ $(function () {
 
     $("#disable-btn").click(function () {
         var product_id = $("#product_id").val();
-
-        var ajax = $.ajax({
+        if(!product_id.trim().length) {
+            clear_form_data()
+            flash_message("Product Id should not be empty!")
+        } else {
+            var ajax = $.ajax({
                 type: "PUT",
                 url: "/inventory/" + product_id + "/disable",
                 contentType: "application/json",
                 data:''
             })
 
-        ajax.done(function(res){
-            update_form_data(res)
-            flash_message("Product " + product_id +" has been Disabled!")
-            list_all_inventories()
-        });
+            ajax.done(function(res){
+                update_form_data(res)
+                flash_message("Product " + product_id +" has been Disabled!")
+                list_all_inventories()
+            });
 
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
-
+            ajax.fail(function(res){
+                flash_message(res.responseJSON.message)
+            });
+        }
     });
 
     // **********************************************
