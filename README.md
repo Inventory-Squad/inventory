@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Inventory-Squad/inventory.svg?branch=master)](https://travis-ci.org/Inventory-Squad/inventory)
 [![codecov](https://codecov.io/gh/Inventory-Squad/inventory/branch/master/graph/badge.svg)](https://codecov.io/gh/Inventory-Squad/inventory)
-# inventory
-The inventory resource keeps track of how many of each product we have in our warehouse
+# Inventory
+The inventory resource keeps track of how many of each product we have in our warehouse.
 
 ## Setting up your Development Environment
 To get started, download and install VirtualBox and Vagrant.
@@ -17,7 +17,8 @@ To get started, download and install VirtualBox and Vagrant.
 
 ## Manually running the Tests
 
-These tests require the service to be running becasue unlike the the TDD unit tests that test the code locally, these BDD intagration tests are using Selenium to manipulate a web page on a running server.
+### BDD
+BDD integration tests are using Selenium to manipulate a web page on a running server.
 
 Run the tests using `behave`
 ```shell
@@ -47,6 +48,7 @@ or you can supress info logging with this command:
 
 This will suppress the normal `INFO` logging
 
+### TDD
 This repo also has unit tests that you can run `nose`
 
 ```bash
@@ -74,7 +76,7 @@ If the VM is no longer needed you can remove it with:
 
 | Fields        | Type                                 |
 | :------------ | :----------------------------------- |
-| id  | Integer, read only                   |
+| id  | String, read only                   |
 | product_id    | Integer                              |
 | quantity      | Integer                              |
 | restock_level | Integer, when to order more          |
@@ -125,3 +127,9 @@ https://nyu-inventory-service-f19.mybluemix.net/
 
 ## View Product with UI
 https://nyu-inventory-service-f19-prod.mybluemix.net/
+
+## Delivery Pipeline
+https://cloud.ibm.com/devops/pipelines/5ef0d78c-44b1-4115-aa5d-8283a9ae61db?env_id=ibm:yp:us-south
+
+## Swagger Documentation
+https://nyu-inventory-service-f19-prod.mybluemix.net/apidocs/index.html
