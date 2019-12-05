@@ -270,12 +270,14 @@ class InventoryCollection(Resource):
         available = args['available']
         args_len = len(request.args)
 
-        message_invalid_fields = 'Only accept query by product-id, available, ' \
+        message_invalid_fields = \
+        'Only accept query by product-id, available, ' \
         + 'product-id & availabe, condition, product-id & condition, ' \
         + 'restock-level, restock (list all the inventory that need ' \
         + 'to be restocked).'
         message_condition_empty = '{} can\'t be empty'.format('condition')
-        message_condition_invalid = '{} must be new, open_box, used'.format('condition')
+        message_condition_invalid = '{} must be new, open_box, used'\
+        .format('condition')
 
         if args_len is 0:
             inventories = Inventory.all()
