@@ -267,44 +267,37 @@ class InventoryCollection(Resource):
         restock_level = args['restock-level']
         condition = args['condition']
         product_id = args['product-id']
-        available = args['available']    
-        # if not (restock and restock_level and condition and \
-        # product_id and available):
-        #     message_empty = ""
-        #     if not restock:
-        #         message_empty += "restock"
-        #     if not restock_level:
-        #         message_empty += ", restock-level"
-        #     if not condition:
-        #         message_empty += ", condition"
-        #     if not product_id:
-        #         message_empty += ", product-id"
-        #     if not available:
-        #         message_empty += ", available"
-        #     api.abort(400, '{} can\'t be empty'.format(message_empty))
+        available = args['available']
         args_len = len(request.args)
+
+        if condition is not None:
+            if condition is '':
+                api.abort(400, '{} can\'t be empty'.format('condition'))
+            elif condition not in ('new', 'open_box', 'used'):
+                api.abort(400, '{} must be new, open_box, used'\
+                .format('condition'))
+
         if args_len is 0:
             inventories = Inventory.all()
-        elif restock is not None:
-            inventories = Inventory.find_by_restock(restock)
-        elif restock_level is not None:
-            inventories = Inventory.find_by_restock_level(int(restock_level))
-        elif condition is not None:
-            # if condition is '':
-            #     api.abort(400, '{} can\'t be empty'.format('condition'))
+        elif args_len is 1:
             if product_id is not None:
+                inventories = Inventory.find_by_product_id(int(product_id))
+            elif restock is not None:
+                inventories = Inventory.find_by_restock(restock)
+            elif restock_level is not None:
+                inventories = Inventory.find_by_restock_level\
+                (int(restock_level))
+            elif condition is not None:
+                inventories = Inventory.find_by_condition(condition)
+            elif availabe is not None:
+                inventories = Inventory.find_by_availability(available)
+        elif args_len is 2:
+            if condition is not None and product_id is not None:
                 inventories = Inventory.find_by_condition_with_pid(
                     condition, int(product_id))
-            elif product_id is None:
-                inventories = Inventory.find_by_condition(condition)
-        elif available is not None:
-            if product_id is not None:
+            elif available is not None and product_id is not None:
                 inventories = Inventory.\
                 find_by_availability_with_pid(available, int(product_id))
-            elif product_id is None:
-                inventories = Inventory.find_by_availability(available)
-        elif product_id is not None:
-            inventories = Inventory.find_by_product_id(int(product_id))
         else:
             message = 'Only accept query by product-id, available, ' \
             + 'product-id & availabe, condition, product-id & condition, ' \
