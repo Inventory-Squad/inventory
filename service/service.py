@@ -270,12 +270,12 @@ class InventoryCollection(Resource):
         available = args['available']
         args_len = len(request.args)
 
-        if condition is not None:
-            if condition is '':
-                api.abort(400, '{} can\'t be empty'.format('condition'))
-            elif condition not in ('new', 'open_box', 'used'):
-                api.abort(400, '{} must be new, open_box, used'\
-                .format('condition'))
+        message_invalid_fields = 'Only accept query by product-id, available, ' \
+        + 'product-id & availabe, condition, product-id & condition, ' \
+        + 'restock-level, restock (list all the inventory that need ' \
+        + 'to be restocked).'
+        message_condition_empty = '{} can\'t be empty'.format('condition')
+        message_condition_invalid = '{} must be new, open_box, used'.format('condition')
 
         if args_len is 0:
             inventories = Inventory.all()
@@ -288,22 +288,32 @@ class InventoryCollection(Resource):
                 inventories = Inventory.find_by_restock_level\
                 (int(restock_level))
             elif condition is not None:
-                inventories = Inventory.find_by_condition(condition)
-            elif availabe is not None:
+                if condition is '':
+                     api.abort(400, message_condition_empty)
+                elif condition not in ('new', 'open_box', 'used'):
+                    api.abort(400, message_condition_invalid)
+                else:
+                    inventories = Inventory.find_by_condition(condition)
+            elif available is not None:
                 inventories = Inventory.find_by_availability(available)
+            else:
+                api.abort(400, message_invalid_fields)
         elif args_len is 2:
             if condition is not None and product_id is not None:
-                inventories = Inventory.find_by_condition_with_pid(
-                    condition, int(product_id))
+                if condition is '':
+                    api.abort(400, message_condition_empty)
+                elif condition not in ('new', 'open_box', 'used'):
+                    api.abort(400, message_condition_invalid)
+                else:
+                    inventories = Inventory.find_by_condition_with_pid(
+                        condition, int(product_id))
             elif available is not None and product_id is not None:
                 inventories = Inventory.\
                 find_by_availability_with_pid(available, int(product_id))
+            else:
+                api.abort(400, message_invalid_fields)
         else:
-            message = 'Only accept query by product-id, available, ' \
-            + 'product-id & availabe, condition, product-id & condition, ' \
-            + 'restock-level, restock (list all the inventory that need ' \
-            + 'to be restocked).'
-            api.abort(400, message)
+            api.abort(400, message_invalid_fields)
         results = [e.serialize() for e in inventories]
         return results, status.HTTP_200_OK
 
