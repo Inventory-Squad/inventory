@@ -277,6 +277,12 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(len(data), len(condition_inventories))
         for i in data:
             self.assertEqual(i['condition'], test_condition)
+        resp = self.app.get('/inventory?condition={}'.format('invalid'))
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(b'must be new, open_box, used', resp.data)
+        resp = self.app.get('/inventory?condition={}'.format(''))
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(b'can\'t be empty', resp.data)
         # /inventory?product-id={pid}&condition={condition}
         resp = self.app.get('/inventory',
                             query_string='product-id={0}&condition={1}'.format(
@@ -287,6 +293,12 @@ class TestInventoryServer(unittest.TestCase):
         for i in data:
             self.assertEqual(i['condition'], test_condition)
             self.assertEqual(i['product_id'], test_pid)
+        resp = self.app.get('/inventory?product-id=1&condition={}'.format('invalid'))
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(b'must be new, open_box, used', resp.data)
+        resp = self.app.get('/inventory?product-id=1&condition={}'.format(''))
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(b'can\'t be empty', resp.data)
 
     def test_query_inventory_list_by_availability(self):
         """ Query an Inventory by availability """
@@ -341,6 +353,26 @@ class TestInventoryServer(unittest.TestCase):
         for inventory in data:
             self.assertEqual(inventory['product_id'], 2)
             self.assertEqual(inventory['available'], False)       
+
+    def test_invalid_query(self):
+        """ Query Inventories if the request argument is invalid """
+        inventories = []
+        for _ in range(5):
+            test = Inventory(product_id=_, quantity=_, restock_level=3,
+                             condition="new", available=True)
+            test.save()
+            inventories.append(test)
+        resp = self.app.get('/inventory',
+                            query_string='?invalidpara=1')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        resp = self.app.get('/inventory',
+                            query_string='?invalidpara=1&invalidpara=1')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        resp = self.app.get('/inventory',
+                            query_string=\
+                            '?invalidpara=1&invalidpara=1' + \
+                            '&nvalidpara=1&invalidpara=1')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_inventory(self):
         """ Update an existing Inventory """

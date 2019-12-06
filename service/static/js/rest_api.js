@@ -246,7 +246,7 @@ $(function () {
     // ****************************************
 
     $("#delete-btn").click(function () {
-        var inventory_id = $("#inventory_id").val();
+        var inventory_id = $("#inventory_id").val().trim();
 
         if(!inventory_id.trim().length) {
             clear_form_data()
