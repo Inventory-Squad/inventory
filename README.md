@@ -109,6 +109,7 @@ An API to allow management of inventory for an e-commerce website. It will suppo
 - By need restock or not: GET `/inventory?restock={bool:needRestock} `
 - By restock level: GET `/inventory?restock-level={int:restock-level-value} `
 - By availability: GET `/inventory?available={bool:isAvailable}`
+- By availability and product id: GET /inventory?available={bool:isAvailable}&product-id={int:pid}
 
 ##### Delete an inventory
 
